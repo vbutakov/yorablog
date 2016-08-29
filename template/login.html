@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <!-- <link rel="stylesheet" type="text/css" href="file:///home/valya/myprogs/yorablog/static/css/login_1471960505.css" /> -->
+    <link rel="stylesheet" type="text/css" href="/static/css/login_1471960505.css" />
+  </head>
+  <body>
+    <div class="login">
+      <form action="/login/" method="post">
+        <div class="header">
+          Please login:
+        </div>
+        <div class="field">
+          <label for="email" class="form_label" >Email:</label>
+          <input type="text" id="email" name="email" class="form_input" value="{{.Email}}" />
+        </div>
+        <div class="field">
+          <label for="password" class="form_label" >Password:</label>
+          <input type="password" id="password" name="password" class="form_input" />
+        </div>
+        <input type="submit" value="Login" class="form_submit">
+      </form>
+    </div>
+  </body>
+</html>
