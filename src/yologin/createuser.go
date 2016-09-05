@@ -1,10 +1,10 @@
 package yologin
 
 import (
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
+	"yotemplate"
 )
 
 // CreateUserPage data for create user page
@@ -17,13 +17,13 @@ type CreateUserPage struct {
 
 // CreateUserPageHandler - handler for create user pages
 type CreateUserPageHandler struct {
-	CreateUserTemplates *template.Template
+	CreateUserTemplates *yotemplate.YoTemplate
 }
 
 // InitCreateUserPageHandler creates and inits login page handler
 func InitCreateUserPageHandler() *CreateUserPageHandler {
 	createUserTemplatePath := filepath.Join("templates", "createuser.html")
-	createUserTemplates, err := template.ParseFiles(createUserTemplatePath)
+	createUserTemplates, err := yotemplate.InitYoTemplate(createUserTemplatePath)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -44,5 +44,5 @@ func (cuph CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	w.WriteHeader(http.StatusOK)
 
-	cuph.CreateUserTemplates.ExecuteTemplate(w, "createuser.html", cup)
+	cuph.CreateUserTemplates.Execute(w, cup)
 }
