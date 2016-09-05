@@ -19,8 +19,8 @@ type LoginPageHandler struct {
 }
 
 // InitLoginPageHandler creates and inits login page handler
-func InitLoginPageHandler() *LoginPageHandler {
-	loginTemplatePath := filepath.Join("templates", "login.html")
+func InitLoginPageHandler(templatesPath string) *LoginPageHandler {
+	loginTemplatePath := filepath.Join(templatesPath, "login.html")
 	loginTemplates, err := yotemplate.InitYoTemplate(loginTemplatePath)
 	if err != nil {
 		log.Panic(err)
