@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html>
-    <head>
-	<meta charset="utf-8"/>
-	<!-- <link rel="stylesheet" type="text/css" href="file:///home/valya/myprogs/yorablog/static/css/login.css" /> -->
-	<link rel="stylesheet" type="text/css" href="/static/css/login.css" />
-    </head>
-    <body>
-	<div class="login">
-	    <form action="/createuser/" method="post">
-		<div class="header">
-		    Create user:
-		</div>
-		<div class="field">
-		    <label for="name" class="form_label" >Name:</label>
-		    <input type="text" id="name" name="name" class="form_input" value="{{.Name}}" />
-		</div>
-		<div class="field">
-		    <label for="email" class="form_label" >Email:</label>
-		    <input type="text" id="email" name="email" class="form_input" value="{{.Email}}" />
-		</div>
-		<div class="field">
-		    <label for="password" class="form_label" >Password:</label>
-		    <input type="password" id="password" name="password" class="form_input" />
-		</div>
-		<div class="field">
-		    <label for="password_confirm" class="form_label" >Confirm:</label>
-		    <input type="password" id="password_confirm" name="password_confirm" class="form_input" />
-		</div>
-		<input type="submit" value="Login" class="form_submit">
-	    </form>
-	</div>
-    </body>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="/static/css/login.css" />
+  <title>Create new user</title>
+</head>
+<body>
+  <div class="login">
+    <form action="/createuser/" method="post">
+      <div class="header">
+        Create user:
+      </div>
+      <div class="field">
+        <label for="name" class="form_label" >Name:</label>
+        <input type="text" id="name" name="name" class="form_input" value="{{.Name}}" />
+      </div>
+      <div class="field">
+        <label for="email" class="form_label" >Email:</label>
+        <input type="text" id="email" name="email" class="form_input" value="{{.Email}}" />
+      </div>
+      <div class="field">
+        <label for="password" class="form_label" >Password:</label>
+        <input type="password" id="password" name="password" class="form_input" />
+      </div>
+      <div class="field">
+        <label for="password_confirm" class="form_label" >Confirm:</label>
+        <input type="password" id="password_confirm" name="password_confirm" class="form_input" />
+      </div>
+      <input type="submit" value="Login" class="form_submit">
+    </form>
+  </div>
+</body>
 </html>

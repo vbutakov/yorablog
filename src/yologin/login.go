@@ -1,10 +1,10 @@
 package yologin
 
 import (
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
+	"yotemplate"
 )
 
 // LoginPage data for login page
@@ -15,13 +15,13 @@ type LoginPage struct {
 
 // LoginPageHandler - handler for login pages
 type LoginPageHandler struct {
-	LoginTemplates *template.Template
+	LoginTemplates *yotemplate.YoTemplate
 }
 
 // InitLoginPageHandler creates and inits login page handler
 func InitLoginPageHandler() *LoginPageHandler {
 	loginTemplatePath := filepath.Join("templates", "login.html")
-	loginTemplates, err := template.ParseFiles(loginTemplatePath)
+	loginTemplates, err := yotemplate.InitYoTemplate(loginTemplatePath)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -41,5 +41,5 @@ func (lph LoginPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 
-	lph.LoginTemplates.ExecuteTemplate(w, "login.html", lp)
+	lph.LoginTemplates.Execute(w, lp)
 }
