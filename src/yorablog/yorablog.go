@@ -8,15 +8,20 @@ import (
 
 func main() {
 
-	LoginHandler := yologin.InitLoginPageHandler()
-	CreateUserHandler := yologin.InitCreateUserPageHandler()
+	err := InitEnv()
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	LoginHandler := yologin.InitLoginPageHandler(BaseTemplatesPath)
+	CreateUserHandler := yologin.InitCreateUserPageHandler(BaseTemplatesPath)
 
 	http.Handle("/login/", LoginHandler)
 	http.Handle("/createuser/", CreateUserHandler)
 	http.Handle("/static/", http.StripPrefix("/static/",
-		http.FileServer(http.Dir("./static"))))
+		http.FileServer(http.Dir(BaseStaticPath))))
 
-	log.Println("Listen on port 8080.")
+	log.Printf("Listen on %v.\n", BaseServeAddr)
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(BaseServeAddr, nil)
 }
