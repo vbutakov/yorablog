@@ -1,0 +1,100 @@
+
+/* base palette:
+
+As hex codes:
+.color-primary-0 { color: #582A72 }	Main Primary color
+.color-primary-1 { color: #9775AA }
+.color-primary-2 { color: #764B8E }
+.color-primary-3 { color: #3D1255 }
+.color-primary-4 { color: #260339 }
+
+As RGBa codes:
+.rgba-primary-0 { color: rgba( 88, 42,114,1) } Main Primary color
+.rgba-primary-1 { color: rgba(151,117,170,1) }
+.rgba-primary-2 { color: rgba(118, 75,142,1) }
+.rgba-primary-3 { color: rgba( 61, 18, 85,1) }
+.rgba-primary-4 { color: rgba( 38,  3, 57,1) }
+
+*/
+
+body {
+    width: 50em;
+    margin: auto;
+}
+
+header {
+  display: block;
+  background-color: #3D1255;
+  color: #9775AA;
+  padding: 2em 2em 0em 2em;
+}
+
+nav {
+  background-color: #3D1255;
+  color: #9775AA;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+nav ul li {
+    float: left;
+}
+
+nav ul li a {
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: #9775AA;
+}
+
+/* Change the link color to #111 (black) on hover */
+nav ul li a:hover {
+    background-color: #764B8E;
+    color: #3D1255;
+}
+
+aside {
+  display: block;
+  float: right;
+  width: 12em;
+  background-color: #9775AA;
+  color: #3D1255;
+  border: 3px solid red;
+}
+
+article {
+  margin-right: 13em;
+  color: #3D1255;
+  display: block;
+  width: 37em;
+  border: 3px solid #73AD21;
+}
+
+section {
+  margin-top: 2em;
+}
+
+section:first-child {
+  margin-top: 1em;
+}
+
+section h2 {
+  margin: 0.2em;
+}
+
+section p {
+  margin: 0.2em;
+}
+
+footer {
+  display: block;
+  background-color: #3D1255;
+  color: #9775AA;
+  padding: 2em;
+}

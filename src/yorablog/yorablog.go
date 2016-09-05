@@ -16,10 +16,14 @@ func main() {
 	LoginHandler := yologin.InitLoginPageHandler(BaseTemplatesPath)
 	CreateUserHandler := yologin.InitCreateUserPageHandler(BaseTemplatesPath)
 
+	IndexHandler := InitIndexPageHandler(BaseTemplatesPath)
+
 	http.Handle("/login/", LoginHandler)
 	http.Handle("/createuser/", CreateUserHandler)
 	http.Handle("/static/", http.StripPrefix("/static/",
 		http.FileServer(http.Dir(BaseStaticPath))))
+
+	http.Handle("/", IndexHandler)
 
 	log.Printf("Listen on %v.\n", BaseServeAddr)
 
