@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"html/template"
 	"log"
 	"time"
 )
@@ -10,11 +11,11 @@ import _ "github.com/go-sql-driver/mysql"
 // Post data structure
 type Post struct {
 	ID          int
-	Title       string
-	Description string
+	Title       template.HTML
+	Description template.HTML
 	ImageURL    string
-	Annotation  string
-	Text        string
+	Annotation  template.HTML
+	Text        template.HTML
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -65,7 +66,14 @@ func DBGetPosts(num, offset int) ([]Post, error) {
 		if err != nil {
 			log.Printf("Error in row scan inside DBGetPosts: %v\n", err)
 		}
-		post := &Post{ID, Title, Description, ImageURL, Annotation, Text, CreatedAt, UpdatedAt}
+		post := &Post{ID: ID,
+			Title:       template.HTML(Title),
+			Description: template.HTML(Description),
+			ImageURL:    ImageURL,
+			Annotation:  template.HTML(Annotation),
+			Text:        template.HTML(Text),
+			CreatedAt:   CreatedAt,
+			UpdatedAt:   UpdatedAt}
 
 		posts = append(posts, *post)
 	}
@@ -91,7 +99,56 @@ func DBGetPostByID(id int) (*Post, error) {
 	var UpdatedAt time.Time
 
 	err := row.Scan(&ID, &Title, &Description, &ImageURL, &Annotation, &Text, &CreatedAt, &UpdatedAt)
-	post := &Post{ID, Title, Description, ImageURL, Annotation, Text, CreatedAt, UpdatedAt}
+	post := &Post{ID,
+		template.HTML(Title),
+		template.HTML(Description),
+		ImageURL,
+		template.HTML(Annotation),
+		template.HTML(Text),
+		CreatedAt,
+		UpdatedAt}
 
 	return post, err
+}
+
+// DBUpdatePost updates post in the database
+func DBUpdatePost(post *Post) error {
+	_, err := DBConnection.Exec(
+		`UPDATE Posts
+		SET
+			Title = ?,
+			Description = ?,
+			ImageURL = ?,
+			Annotation = ?,
+			PostText = ?
+		WHERE id = ?;`,
+		string(post.Title),
+		string(post.Description),
+		post.ImageURL,
+		string(post.Annotation),
+		string(post.Text),
+		post.ID)
+
+	return err
+}
+
+// DBInsertPost create new post in db
+func DBInsertPost(post *Post) (int, error) {
+	res, err := DBConnection.Exec(
+		`INSERT INTO Posts
+			(Title, Description, ImageURL, Annotation, PostText)
+		VALUES(?, ?, ?, ?, ?);`,
+		string(post.Title),
+		string(post.Description),
+		post.ImageURL,
+		string(post.Annotation),
+		string(post.Text))
+	if err != nil {
+		return 0, err
+	}
+
+	var postID int64
+	postID, err = res.LastInsertId()
+
+	return int(postID), err
 }

@@ -26,6 +26,8 @@ func main() {
 
 	IndexHandler := InitIndexPageHandler(BaseTemplatesPath)
 	PostHandler := InitPostPageHandler(BaseTemplatesPath)
+	EditHandler := InitEditPageHandler(BaseTemplatesPath)
+	CreateHandler := InitCreatePageHandler(BaseTemplatesPath)
 
 	http.Handle("/login/", LoginHandler)
 	http.Handle("/createuser/", CreateUserHandler)
@@ -34,6 +36,8 @@ func main() {
 
 	http.Handle("/", IndexHandler)
 	http.Handle("/post/", PostHandler)
+	http.Handle("/edit/", EditHandler)
+	http.Handle("/create/", CreateHandler)
 
 	log.Printf("Listen on %v.\n", BaseServeAddr)
 

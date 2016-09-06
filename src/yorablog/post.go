@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -13,8 +14,8 @@ type PostPage struct {
 	Post          *Post
 	OGURL         string
 	OGType        string
-	OGTitle       string
-	OGDescription string
+	OGTitle       template.HTML
+	OGDescription template.HTML
 	OGImage       string
 }
 
@@ -23,7 +24,7 @@ type PostPageHandler struct {
 	Template *yotemplate.YoTemplate
 }
 
-// InitPostPageHandler initialize IndexPageHandler struct
+// InitPostPageHandler initialize PostPageHandler struct
 func InitPostPageHandler(templatesPath string) *PostPageHandler {
 	postTemplatePath := filepath.Join(templatesPath, "post.html")
 	postTemplate, err := yotemplate.InitYoTemplate(postTemplatePath)
@@ -35,7 +36,7 @@ func InitPostPageHandler(templatesPath string) *PostPageHandler {
 	return &PostPageHandler{Template: postTemplate}
 }
 
-// IndexPageHandle - handler for index page
+// PostPageHandler - handler for post page
 func (pph PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res := PostURLPattern.FindStringSubmatch(r.URL.Path)

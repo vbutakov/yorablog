@@ -12,8 +12,7 @@
     <nav class="menu">
       <ul>
         <li><a href="/">На главную</a></li>
-        <li><a href="#">Сюда</a></li>
-        <li><a href="#">Куда-то</a></li>
+        <li><a href="/create/">Создать статью</a></li>
       </ul>
     </nav>
   </header>
@@ -23,7 +22,7 @@
       <section>
         <h2><a href="/post/{{.ID}}">{{.Title}}</a></h2>
         <p>{{.Annotation}}</p>
-        <p class="datetime">Опубликовано: {{.UpdatedAt}}</p>
+        <p class="datetime">Опубликовано: {{.CreatedAt}}</p>
       </section>
       {{end}}
       <nav class="pager">
