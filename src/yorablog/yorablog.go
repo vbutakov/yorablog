@@ -13,6 +13,14 @@ func main() {
 		log.Panicln(err)
 	}
 
+	InitURLPatterns() // panic if regexps not compile
+
+	err = InitDB()
+	if err != nil {
+		log.Panicln(err)
+	}
+	defer DBConnection.Close()
+
 	LoginHandler := yologin.InitLoginPageHandler(BaseTemplatesPath)
 	CreateUserHandler := yologin.InitCreateUserPageHandler(BaseTemplatesPath)
 

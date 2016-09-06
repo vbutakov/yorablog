@@ -3,12 +3,15 @@
 <head>
   <meta charset="utf-8"/>
   <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+  <link rel="icon"
+      type="image/png"
+      href="/static/img/black-evil-cat.png">
   <title>YoraBlog - поэма о кошках</title>
 </head>
 <body>
   <header>
     <h1>YoraBlog - поэма о кошках</h1>
-    <nav>
+    <nav class="menu">
       <ul>
         <li><a href="#">Туда</a></li>
         <li><a href="#">Сюда</a></li>
@@ -16,30 +19,46 @@
       </ul>
     </nav>
   </header>
+  <div class="flex-container">
+    <article>
+      {{range .Posts}}
+      <section>
+        <h2>{{.Title}}</h2>
+        <p>{{.Annotation}}</p>
+      </section>
+      {{end}}
+      <section>
+        <h2>О космосе и котах</h2>
+        <p>
+          Бывает так, что сидишь, смотришь на кошку
+          и понимаешь - там целый космос.
+        </p>
+      </section>
+      <section>
+        <h2>Как выжить среди хищников</h2>
+        <p>
+          Вопрос выживания дома среди хищников возникает часто.
+          Основной принцип - не отсвечивай.
+        </p>
+      </section>
+      <nav class="pager">
+        <ul>
+          <li><a href="#"><< Предыдущие</a></li>
+          <li><a href="#">Следующие >></a></li>
+        </ul>
+      </nav>
+    </article>
   <aside>
     <p>Архив и все такое</p>
     <p>Приколы</p>
     <p>Напиши мне</p>
     <p>Случайное</p>
   </aside>
-  <article>
-    <section>
-      <h2>О космосе и котах</h2>
-      <p>
-        Бывает так, что сидишь, смотришь на кошку
-        и понимаешь - там целый космос.
-      </p>
-    </section>
-    <section>
-      <h2>Как выжить среди хищников</h2>
-      <p>
-        Вопрос выживания дома среди хищников возникает часто.
-        Основной принцип - не отсвечивай.
-      </p>
-    </section>
-  </article>
+  </div>
   <footer>
-    Copyright <a href="mailto:vbutakov@gmail.com">vbutakov@gmail.com</a>
+    Copyright <a href="mailto:vbutakov@gmail.com">vbutakov@gmail.com</a><br /><br />
+    <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+  </br/>
   </footer>
 </body>
 </html>

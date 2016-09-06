@@ -29,23 +29,23 @@ header {
   padding: 2em 2em 0em 2em;
 }
 
-nav {
+nav.menu {
   background-color: #3D1255;
   color: #9775AA;
 }
 
-nav ul {
+nav.menu ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
     overflow: hidden;
 }
 
-nav ul li {
+nav.menu ul li {
     float: left;
 }
 
-nav ul li a {
+nav.menu ul li a {
     display: block;
     text-align: center;
     padding: 14px 16px;
@@ -54,26 +54,32 @@ nav ul li a {
 }
 
 /* Change the link color to #111 (black) on hover */
-nav ul li a:hover {
+nav.menu ul li a:hover {
     background-color: #764B8E;
     color: #3D1255;
 }
 
+.flex-container {
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-between;
+  /*border: 3px solid blue;*/
+}
+
 aside {
   display: block;
-  float: right;
   width: 12em;
   background-color: #9775AA;
   color: #3D1255;
-  border: 3px solid red;
+  /*border: 3px solid red;*/
 }
 
 article {
-  margin-right: 13em;
+  /*margin-right: 13em;*/
   color: #3D1255;
   display: block;
   width: 37em;
-  border: 3px solid #73AD21;
+  /*border: 3px solid #73AD21;*/
 }
 
 section {
@@ -90,6 +96,38 @@ section h2 {
 
 section p {
   margin: 0.2em;
+}
+
+nav.pager {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+nav.pager ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+nav.pager ul li {
+    float: left;
+}
+
+nav.pager ul li a {
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    margin: 0.2em;
+    text-decoration: none;
+    color: #3D1255;
+    border: 1px solid #9775AA;
+}
+
+/* Change the link color to #111 (black) on hover */
+nav.pager ul li a:hover {
+    background-color: #764B8E;
+    color: #3D1255;
 }
 
 footer {
