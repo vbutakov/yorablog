@@ -136,3 +136,9 @@ footer {
   color: #9775AA;
   padding: 2em;
 }
+
+.datetime {
+  font-style: italic;
+  font-size: 0.7em;
+  color: #582A72;
+}

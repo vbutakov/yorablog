@@ -9,5 +9,5 @@ var (
 
 // InitURLPatterns initialize URL patterns
 func InitURLPatterns() {
-	IndexURLPattern = regexp.MustCompile("/(\\d*)/?")
+	IndexURLPattern = regexp.MustCompile(`^/(?P<pageNum>[\d]*)/?$`)
 }

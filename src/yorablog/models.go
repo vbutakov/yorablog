@@ -37,10 +37,11 @@ func InitDB() (err error) {
 // DBGetPosts returns fixed number of posts
 func DBGetPosts(num, offset int) ([]Post, error) {
 
-	posts := make([]Post, 10)
+	posts := make([]Post, 0, 10)
 
 	rows, err := DBConnection.Query(
-		`SELECT id, Title, Description, ImageURL, Annotation, PostText, CreatedAt, UpdatedAt
+		`SELECT id, Title, Description, ImageURL, Annotation, PostText,
+      CreatedAt, UpdatedAt
     FROM Posts
     ORDER BY id desc
     LIMIT ? OFFSET ?;`,

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -10,8 +11,10 @@ import (
 
 // IndexPage is a struct for data on the index page
 type IndexPage struct {
-	CurrentPage int
-	Posts       []Post
+	CurrentPageURL string
+	PrevPageURL    string
+	NextPageURL    string
+	Posts          []Post
 }
 
 // IndexPageHandler is a handler for page processing
@@ -34,8 +37,8 @@ func InitIndexPageHandler(templatesPath string) *IndexPageHandler {
 // IndexPageHandle - handler for index page
 func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	ok := IndexURLPattern.MatchString(r.URL.Path)
-	if !ok {
+	res := IndexURLPattern.FindStringSubmatch(r.URL.Path)
+	if res == nil {
 		http.NotFound(w, r)
 		return
 	}
@@ -44,7 +47,8 @@ func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var pageNum int
 	var err error
 
-	pageNumStr := IndexURLPattern.SubexpNames()[1]
+	// calculate offset for db query
+	pageNumStr := res[1]
 	if pageNumStr == "" {
 		offset = 0
 	} else {
@@ -61,7 +65,20 @@ func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ip := &IndexPage{}
-	ip.CurrentPage = pageNum
+	// create links for prev/next buttons
+	ip.CurrentPageURL = r.URL.String()
+	if offset == 0 {
+		ip.PrevPageURL = "/2"
+		ip.NextPageURL = "/"
+	} else {
+		ip.PrevPageURL = fmt.Sprintf("/%v", pageNum+1)
+		if pageNum > 2 {
+			ip.NextPageURL = fmt.Sprintf("/%v", pageNum-1)
+		} else {
+			ip.NextPageURL = "/"
+		}
+	}
+
 	ip.Posts, err = DBGetPosts(10, offset)
 	if err != nil {
 		log.Printf("Error during db query for index page: %v\n", err)

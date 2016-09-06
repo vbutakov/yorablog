@@ -23,28 +23,15 @@
     <article>
       {{range .Posts}}
       <section>
-        <h2>{{.Title}}</h2>
+        <h2><a href="/post/{{.ID}}">{{.Title}}</a></h2>
         <p>{{.Annotation}}</p>
+        <p class="datetime">Опубликовано: {{.UpdatedAt}}</p>
       </section>
       {{end}}
-      <section>
-        <h2>О космосе и котах</h2>
-        <p>
-          Бывает так, что сидишь, смотришь на кошку
-          и понимаешь - там целый космос.
-        </p>
-      </section>
-      <section>
-        <h2>Как выжить среди хищников</h2>
-        <p>
-          Вопрос выживания дома среди хищников возникает часто.
-          Основной принцип - не отсвечивай.
-        </p>
-      </section>
       <nav class="pager">
         <ul>
-          <li><a href="#"><< Предыдущие</a></li>
-          <li><a href="#">Следующие >></a></li>
+          <li><a href="{{.PrevPageURL}}"><< Предыдущие</a></li>
+          <li><a href="{{.NextPageURL}}">Следующие >></a></li>
         </ul>
       </nav>
     </article>
