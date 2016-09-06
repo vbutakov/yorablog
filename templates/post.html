@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+  <link rel="icon" type="image/png" href="/static/img/black-evil-cat.png">
+  <title>YoraBlog - {{.Post.Title}}</title>
+  <!-- Comment #1: OG Tags -->
+  <meta property="og:url"           content="{{.OGURL}}" />
+  <meta property="og:type"          content="{{.OGType}}" />
+  <meta property="og:title"         content="{{.OGTitle}}" />
+  <meta property="og:description"   content="{{.OGDescription}}" />
+  <meta property="og:image"         content="{{.OGImage}}" />
+  <!-- Comment #1: OG Tags -->
+</head>
+<body>
+  <!-- Comment #2: FB SDK -->
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v2.7";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <!-- Comment #2: FB SDK -->
+
+  <header>
+    <h1>YoraBlog - поэма о кошках</h1>
+    <nav class="menu">
+      <ul>
+        <li><a href="/">На главную</a></li>
+        <li><a href="#">Сюда</a></li>
+        <li><a href="#">Куда-то</a></li>
+      </ul>
+    </nav>
+  </header>
+  <div class="flex-container">
+    <article>
+      {{with .Post}}
+      <section>
+        <h2>{{.Title}}</h2>
+        <div>{{.Text}}</div>
+        <p class="datetime">Опубликовано: {{.CreatedAt}}, обновлено: {{.UpdatedAt}}</p>
+      </section>
+      {{end}}
+      <!-- Comment #4: Plugin Code -->
+      <div class="fb-like" data-href="{{.OGURL}}" data-layout="standard" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
+      <div class="fb-comments" data-href="{{.OGURL}}" data-numposts="10" data-width="100%" ></div>
+      <!-- Comment #4: Plugin Code -->
+    </article>
+    <aside>
+      <p>Архив и все такое</p>
+      <p>Приколы</p>
+      <p>Напиши мне</p>
+      <p>Случайное</p>
+    </aside>
+  </div>
+  <footer>
+    Copyright <a href="mailto:vbutakov@gmail.com">vbutakov@gmail.com</a><br /><br />
+    <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+  </br/>
+</footer>
+</body>
+</html>

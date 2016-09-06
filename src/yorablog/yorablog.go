@@ -25,6 +25,7 @@ func main() {
 	CreateUserHandler := yologin.InitCreateUserPageHandler(BaseTemplatesPath)
 
 	IndexHandler := InitIndexPageHandler(BaseTemplatesPath)
+	PostHandler := InitPostPageHandler(BaseTemplatesPath)
 
 	http.Handle("/login/", LoginHandler)
 	http.Handle("/createuser/", CreateUserHandler)
@@ -32,6 +33,7 @@ func main() {
 		http.FileServer(http.Dir(BaseStaticPath))))
 
 	http.Handle("/", IndexHandler)
+	http.Handle("/post/", PostHandler)
 
 	log.Printf("Listen on %v.\n", BaseServeAddr)
 

@@ -72,3 +72,26 @@ func DBGetPosts(num, offset int) ([]Post, error) {
 
 	return posts, nil
 }
+
+// DBGetPostByID find post byspecified id
+func DBGetPostByID(id int) (*Post, error) {
+	row := DBConnection.QueryRow(
+		`SELECT id, Title, Description, ImageURL, Annotation, PostText,
+      CreatedAt, UpdatedAt
+    FROM Posts
+    WHERE id = ?;`,
+		id)
+	var ID int
+	var Title string
+	var Description string
+	var ImageURL string
+	var Annotation string
+	var Text string
+	var CreatedAt time.Time
+	var UpdatedAt time.Time
+
+	err := row.Scan(&ID, &Title, &Description, &ImageURL, &Annotation, &Text, &CreatedAt, &UpdatedAt)
+	post := &Post{ID, Title, Description, ImageURL, Annotation, Text, CreatedAt, UpdatedAt}
+
+	return post, err
+}
