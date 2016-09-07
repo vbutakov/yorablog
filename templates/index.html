@@ -8,6 +8,12 @@
 </head>
 <body>
   <header>
+    {{if .UserName}}
+    <div class="currentUser">
+      <p>{{.UserName}}</p>
+      <a href="/logout/">Выйти</a>
+    </div>
+    {{end}}
     <h1>YoraBlog - поэма о кошках</h1>
     <nav class="menu">
       <ul>

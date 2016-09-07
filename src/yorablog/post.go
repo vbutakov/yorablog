@@ -17,6 +17,7 @@ type PostPage struct {
 	OGTitle       template.HTML
 	OGDescription template.HTML
 	OGImage       string
+	UserName      string
 }
 
 // PostPageHandler is a handler for post page processing
@@ -45,13 +46,25 @@ func (pph PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pp := &PostPage{}
+
+	cookie, err := r.Cookie("SessionID")
+	if err != nil {
+		log.Printf("Error during cookie read on post page: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	sessionID := cookie.Value
+	user, err := DBGetUserBySessionID(sessionID)
+	if err == nil {
+		pp.UserName = user.Name
+	}
+
 	postID, err := strconv.Atoi(res[1])
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
-
-	pp := &PostPage{}
 
 	pp.Post, err = DBGetPostByID(postID)
 	if err != nil {

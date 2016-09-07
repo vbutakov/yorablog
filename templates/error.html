@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
   <link rel="icon" type="image/png" href="/static/img/black-evil-cat.png">
-  <title>YoraBlog - Login</title>
+  <title>YoraBlog - Ошибка</title>
 </head>
 <body>
   <header>
@@ -17,22 +17,8 @@
   </header>
   <div class="flex-container">
     <article>
-      <section>
-        {{if .ErrorMessage}}
-        <div class="errormessage">
-          {{.ErrorMessage}}
-        </div>
-        {{end}}
-        <form method="POST" class="login">
-          <label for="email" >Email:</label>
-          <input type="text" id="email" name="email" class="form_input" value="{{.Email}}" />
-          <label for="password" >Password:</label>
-          <input type="password" id="password" name="password" class="form_input" />
-          <input type="submit" />
-        </form>
-        <br/>
-        <a href="/createuser/">Зарегистрировать нового пользователя</a>
-        <br/>
+      <section class="errormessage">
+        {{.}}
       </section>
     </article>
     <aside>

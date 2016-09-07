@@ -14,6 +14,7 @@ type IndexPage struct {
 	CurrentPageURL string
 	PrevPageURL    string
 	NextPageURL    string
+	UserName       string
 	Posts          []Post
 }
 
@@ -47,6 +48,20 @@ func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var pageNum int
 	var err error
 
+	ip := &IndexPage{}
+
+	cookie, err := r.Cookie("SessionID")
+	if err != nil {
+		log.Printf("Error during cookie read on index page: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	sessionID := cookie.Value
+	user, err := DBGetUserBySessionID(sessionID)
+	if err == nil {
+		ip.UserName = user.Name
+	}
+
 	// calculate offset for db query
 	pageNumStr := res[1]
 	if pageNumStr == "" {
@@ -64,7 +79,6 @@ func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		offset = (pageNum - 1) * 10 // 10 posts on a page
 	}
 
-	ip := &IndexPage{}
 	// create links for prev/next buttons
 	ip.CurrentPageURL = r.URL.String()
 	if offset == 0 {

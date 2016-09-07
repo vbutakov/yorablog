@@ -11,7 +11,8 @@ import (
 
 // CreatePage is a struct for data on the create page
 type CreatePage struct {
-	Post *Post
+	Post     *Post
+	UserName string
 }
 
 // CreatePageHandler is a handler for edit create processing
@@ -36,6 +37,24 @@ func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 		cp := &CreatePage{Post: &Post{}}
+
+		cookie, err := r.Cookie("SessionID")
+		if err != nil {
+			log.Printf("Error during cookie read on post page: %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		sessionID := cookie.Value
+		user, err := DBGetUserBySessionID(sessionID)
+		if err == nil {
+			cp.UserName = user.Name
+		}
+
+		if !user.CreatePostPermit {
+			w.WriteHeader(http.StatusForbidden)
+			ErrorTemplate.Execute(w, "Недостаточно прав для создания статьи")
+			return
+		}
 
 		w.WriteHeader(http.StatusOK)
 
@@ -65,6 +84,6 @@ func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 		redirectURL := fmt.Sprintf("/post/%v", postID)
-		http.Redirect(w, r, redirectURL, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	}
 }

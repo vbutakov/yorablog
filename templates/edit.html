@@ -9,6 +9,12 @@
 </head>
 <body>
   <header>
+    {{if .UserName}}
+    <div class="currentUser">
+      <p>{{.UserName}}</p>
+      <a href="/logout/">Выйти</a>
+    </div>
+    {{end}}
     <h1>YoraBlog - поэма о кошках</h1>
     <nav class="menu">
       <ul>
@@ -20,7 +26,7 @@
     <article>
       {{with .Post}}
       <section>
-        <form action="/edit/{{.ID}}" method="POST">
+        <form action="/edit/{{.ID}}" method="POST" class="posts">
           <label for="title">Заголовок:</label>
           <input id="title" name="title" type="text" value="{{.Title}}" />
           <label for="description">Краткое описание (og description):</label>

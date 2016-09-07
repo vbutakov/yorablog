@@ -12,7 +12,8 @@ import (
 
 // EditPage is a struct for data on the edit page
 type EditPage struct {
-	Post *Post
+	Post     *Post
+	UserName string
 }
 
 // EditPageHandler is a handler for edit page processing
@@ -50,6 +51,24 @@ func (eph EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		ep := &EditPage{}
 
+		cookie, err := r.Cookie("SessionID")
+		if err != nil {
+			log.Printf("Error during cookie read on index page: %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		sessionID := cookie.Value
+		user, err := DBGetUserBySessionID(sessionID)
+		if err == nil {
+			ep.UserName = user.Name
+		}
+
+		if !user.EditPostPermit {
+			w.WriteHeader(http.StatusForbidden)
+			ErrorTemplate.Execute(w, "Недостаточно прав для редактирования статьи")
+			return
+		}
+
 		ep.Post, err = DBGetPostByID(postID)
 		if err != nil {
 			log.Printf("Error during db query for edit page: %v\n", err)
@@ -83,6 +102,6 @@ func (eph EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 		redirectURL := fmt.Sprintf("/post/%v", post.ID)
-		http.Redirect(w, r, redirectURL, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	}
 }

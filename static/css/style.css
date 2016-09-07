@@ -20,6 +20,7 @@ As RGBa codes:
 body {
     width: 50em;
     margin: auto;
+    font-family: Helvetica, sans-serif;
 }
 
 header {
@@ -148,22 +149,56 @@ footer {
   margin-bottom: 1em;
 }
 
-form label {
+form.posts label {
   display: block;
   margin-top: 1em;
 }
 
-form input[type="text"], form input[type="url"] {
+form.posts input[type="text"], form input[type="url"] {
   display: block;
   width: 100%;
 }
 
-form textarea {
+form.posts textarea {
   display: block;
   width: 100%;
 }
 
-form input[type="submit"]{
+form.posts input[type="submit"]{
   margin-top: 1em;
   margin-bottom: 1em;
+}
+
+form.login label {
+  display: block;
+  margin-top: 1em;
+}
+
+form.login input[type="text"], form input[type="password"] {
+  display: block;
+}
+
+form.login input[type="submit"]{
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.errormessage {
+  font-style: italic;
+  color: red;
+}
+
+.currentUser {
+  float: right;
+  font-size: 1em;
+  margin: 0;
+}
+
+div.currentUser p {
+  margin: 0;
+}
+
+div.currentUser a {
+  margin: 0;
+  color: #9775AA;
 }
