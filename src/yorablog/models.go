@@ -152,3 +152,27 @@ func DBInsertPost(post *Post) (int, error) {
 
 	return int(postID), err
 }
+
+// DBSessionValid check that session exist and not expire
+func DBSessionValid(sessionID string) bool {
+	var s string
+	row := DBConnection.QueryRow(
+		`SELECT id FROM Sessions WHERE id = ?;`,
+		sessionID)
+
+	err := row.Scan(&s)
+	if err == sql.ErrNoRows {
+		return false
+	}
+	return true
+}
+
+// DBInsertNewSession inserts new session into db
+func DBInsertNewSession(sessionID string, expires time.Time) error {
+	_, err := DBConnection.Exec(
+		`INSERT INTO Sessions
+			(id, Expires)
+		VALUES (?, ?);`,
+		sessionID, expires)
+	return err
+}
