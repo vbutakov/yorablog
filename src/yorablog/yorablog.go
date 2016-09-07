@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"yologin"
 )
 
 func main() {
@@ -13,13 +12,35 @@ func main() {
 		log.Panicln(err)
 	}
 
-	LoginHandler := yologin.InitLoginPageHandler(BaseTemplatesPath)
-	CreateUserHandler := yologin.InitCreateUserPageHandler(BaseTemplatesPath)
+	InitURLPatterns() // panic if regexps not compile
 
-	http.Handle("/login/", LoginHandler)
-	http.Handle("/createuser/", CreateUserHandler)
+	err = InitDB()
+	if err != nil {
+		log.Panicln(err)
+	}
+	defer DBConnection.Close()
+
+	LoginHandler := InitLoginPageHandler(BaseTemplatesPath)
+	LogoutHandler := &LogoutPageHandler{}
+	CreateUserHandler := InitCreateUserPageHandler(BaseTemplatesPath)
+
+	IndexHandler := InitIndexPageHandler(BaseTemplatesPath)
+	PostHandler := InitPostPageHandler(BaseTemplatesPath)
+	EditHandler := InitEditPageHandler(BaseTemplatesPath)
+	CreateHandler := InitCreatePageHandler(BaseTemplatesPath)
+
+	ErrorTemplate = InitErrorTemplate(BaseTemplatesPath)
+
+	http.Handle("/login/", SessionRequired(LoginHandler))
+	http.Handle("/logout/", SessionRequired(LogoutHandler))
+	http.Handle("/createuser/", SessionRequired(CreateUserHandler))
 	http.Handle("/static/", http.StripPrefix("/static/",
 		http.FileServer(http.Dir(BaseStaticPath))))
+
+	http.Handle("/", SessionRequired(IndexHandler))
+	http.Handle("/post/", SessionRequired(PostHandler))
+	http.Handle("/edit/", SessionRequired(LoginRequired(EditHandler)))
+	http.Handle("/create/", SessionRequired(LoginRequired(CreateHandler)))
 
 	log.Printf("Listen on %v.\n", BaseServeAddr)
 

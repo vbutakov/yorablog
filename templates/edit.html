@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+  <link rel="icon" type="image/png" href="/static/img/black-evil-cat.png">
+  <title>YoraBlog - {{.Post.Title}}</title>
+  <script src="//cdn.ckeditor.com/4.5.10/standard/ckeditor.js"></script>
+</head>
+<body>
+  <header>
+    {{if .UserName}}
+    <div class="currentUser">
+      <p>{{.UserName}}</p>
+      <a href="/logout/">Выйти</a>
+    </div>
+    {{end}}
+    <h1>YoraBlog - поэма о кошках</h1>
+    <nav class="menu">
+      <ul>
+        <li><a href="/">На главную</a></li>
+      </ul>
+    </nav>
+  </header>
+  <div class="flex-container">
+    <article>
+      {{with .Post}}
+      <section>
+        <form action="/edit/{{.ID}}" method="POST" class="posts">
+          <label for="title">Заголовок:</label>
+          <input id="title" name="title" type="text" value="{{.Title}}" />
+          <label for="description">Краткое описание (og description):</label>
+          <input id="description" name="description" type="text" value="{{.Description}}" />
+          <label for="imageurl">URL картинки (og image):</label>
+          <input id="imageurl" name="imageurl" type="url" value="{{.ImageURL}}" />
+          <label for="annotation">Аннотация (отбражается на главной странице):</label>
+          <textarea id="annotation" name="annotation" rows="10">
+            {{.Annotation}}
+          </textarea>
+          <label for="posttext">Текст статьи:</label>
+          <textarea id="posttext" name="posttext" rows="30">
+            {{.Text}}
+          </textarea>
+          <script>
+            CKEDITOR.replace( 'annotation' );
+            CKEDITOR.replace( 'posttext' );
+          </script>
+          <input type="submit" />
+        </form>
+      </section>
+      {{end}}
+    </article>
+    <aside>
+      <p>Архив и все такое</p>
+      <p>Приколы</p>
+      <p>Напиши мне</p>
+      <p>Случайное</p>
+    </aside>
+  </div>
+  <footer>
+    Copyright <a href="mailto:vbutakov@gmail.com">vbutakov@gmail.com</a><br /><br />
+    <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+  </br/>
+</footer>
+</body>
+</html>
