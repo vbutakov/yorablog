@@ -20,6 +20,7 @@ type Post struct {
 	ImageURL    string
 	Annotation  template.HTML
 	Text        template.HTML
+	Author      string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -60,11 +61,12 @@ func DBGetPosts(num, offset int) ([]Post, error) {
 	posts := make([]Post, 0, 10)
 
 	rows, err := DBConnection.Query(
-		`SELECT id, Title, Description, ImageURL, Annotation, PostText,
-      CreatedAt, UpdatedAt
-    FROM Posts
-    ORDER BY id desc
-    LIMIT ? OFFSET ?;`,
+		`SELECT p.id, p.Title, p.Description, p.ImageURL, p.Annotation, p.PostText,
+         u.Name AS AuthorName,
+         p.CreatedAt, p.UpdatedAt
+         FROM Posts p INNER JOIN Users u ON p.Author = u.id
+         ORDER BY id desc
+         LIMIT ? OFFSET ?;`,
 		num, offset)
 	if err != nil {
 		return posts, err
@@ -78,10 +80,11 @@ func DBGetPosts(num, offset int) ([]Post, error) {
 		var ImageURL string
 		var Annotation string
 		var Text string
+		var Author string
 		var CreatedAt time.Time
 		var UpdatedAt time.Time
 
-		err = rows.Scan(&ID, &Title, &Description, &ImageURL, &Annotation, &Text, &CreatedAt, &UpdatedAt)
+		err = rows.Scan(&ID, &Title, &Description, &ImageURL, &Annotation, &Text, &Author, &CreatedAt, &UpdatedAt)
 		if err != nil {
 			log.Printf("Error in row scan inside DBGetPosts: %v\n", err)
 		}
@@ -91,6 +94,7 @@ func DBGetPosts(num, offset int) ([]Post, error) {
 			ImageURL:    ImageURL,
 			Annotation:  template.HTML(Annotation),
 			Text:        template.HTML(Text),
+			Author:      Author,
 			CreatedAt:   CreatedAt,
 			UpdatedAt:   UpdatedAt}
 
@@ -103,29 +107,32 @@ func DBGetPosts(num, offset int) ([]Post, error) {
 // DBGetPostByID find post byspecified id
 func DBGetPostByID(id int) (*Post, error) {
 	row := DBConnection.QueryRow(
-		`SELECT id, Title, Description, ImageURL, Annotation, PostText,
-      CreatedAt, UpdatedAt
-    FROM Posts
-    WHERE id = ?;`,
+		`SELECT p.id, p.Title, p.Description, p.ImageURL, p.Annotation, p.PostText,
+        u.Name AS AuthorName, p.CreatedAt, p.UpdatedAt
+        FROM Posts p INNER JOIN Users u ON p.Author = u.id
+        WHERE p.id = ?;`,
 		id)
+
 	var ID int
 	var Title string
 	var Description string
 	var ImageURL string
 	var Annotation string
 	var Text string
+	var Author string
 	var CreatedAt time.Time
 	var UpdatedAt time.Time
 
-	err := row.Scan(&ID, &Title, &Description, &ImageURL, &Annotation, &Text, &CreatedAt, &UpdatedAt)
-	post := &Post{ID,
-		template.HTML(Title),
-		template.HTML(Description),
-		ImageURL,
-		template.HTML(Annotation),
-		template.HTML(Text),
-		CreatedAt,
-		UpdatedAt}
+	err := row.Scan(&ID, &Title, &Description, &ImageURL, &Annotation, &Text, &Author, &CreatedAt, &UpdatedAt)
+	post := &Post{ID: ID,
+		Title:       template.HTML(Title),
+		Description: template.HTML(Description),
+		ImageURL:    ImageURL,
+		Annotation:  template.HTML(Annotation),
+		Text:        template.HTML(Text),
+		Author:      Author,
+		CreatedAt:   CreatedAt,
+		UpdatedAt:   UpdatedAt}
 
 	return post, err
 }
@@ -152,16 +159,17 @@ func DBUpdatePost(post *Post) error {
 }
 
 // DBInsertPost create new post in db
-func DBInsertPost(post *Post) (int, error) {
+func DBInsertPost(post *Post, userID int) (int, error) {
 	res, err := DBConnection.Exec(
 		`INSERT INTO Posts
-			(Title, Description, ImageURL, Annotation, PostText)
-		VALUES(?, ?, ?, ?, ?);`,
+			(Title, Description, ImageURL, Annotation, PostText, Author)
+		VALUES(?, ?, ?, ?, ?, ?);`,
 		string(post.Title),
 		string(post.Description),
 		post.ImageURL,
 		string(post.Annotation),
-		string(post.Text))
+		string(post.Text),
+		userID)
 	if err != nil {
 		return 0, err
 	}

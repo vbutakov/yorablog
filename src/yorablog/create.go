@@ -35,26 +35,27 @@ func InitCreatePageHandler(templatesPath string) *CreatePageHandler {
 // CreatePageHandle - handler for create page
 func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
+	cp := &CreatePage{Post: &Post{}}
+
+	cookie, err := r.Cookie("SessionID")
+	if err != nil {
+		log.Printf("Error during cookie read on post page: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	sessionID := cookie.Value
+	user, err := DBGetUserBySessionID(sessionID)
+	if err == nil {
+		cp.UserName = user.Name
+	}
+
+	if !user.CreatePostPermit {
+		w.WriteHeader(http.StatusForbidden)
+		ErrorTemplate.Execute(w, "Недостаточно прав для создания статьи")
+		return
+	}
+
 	if r.Method == "GET" {
-		cp := &CreatePage{Post: &Post{}}
-
-		cookie, err := r.Cookie("SessionID")
-		if err != nil {
-			log.Printf("Error during cookie read on post page: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		sessionID := cookie.Value
-		user, err := DBGetUserBySessionID(sessionID)
-		if err == nil {
-			cp.UserName = user.Name
-		}
-
-		if !user.CreatePostPermit {
-			w.WriteHeader(http.StatusForbidden)
-			ErrorTemplate.Execute(w, "Недостаточно прав для создания статьи")
-			return
-		}
 
 		w.WriteHeader(http.StatusOK)
 
@@ -76,7 +77,7 @@ func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		post.Text = template.HTML(r.FormValue("posttext"))
 
 		var postID int
-		postID, err = DBInsertPost(post)
+		postID, err = DBInsertPost(post, user.ID)
 		if err != nil {
 			log.Printf("Error during insert post in DB: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)

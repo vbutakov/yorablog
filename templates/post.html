@@ -8,9 +8,9 @@
   <!-- Comment #1: OG Tags -->
   <meta property="og:url"           content="{{.OGURL}}" />
   <meta property="og:type"          content="{{.OGType}}" />
-  <meta property="og:title"         content="{{.OGTitle}}" />
-  <meta property="og:description"   content="{{.OGDescription}}" />
-  <meta property="og:image"         content="{{.OGImage}}" />
+  <meta property="og:title"			content="{{.OGTitle}}" />
+  <meta property="og:description"	content="{{.OGDescription}}" />
+  <meta property="og:image"			content="{{.OGImage}}" />
   <!-- Comment #1: OG Tags -->
 </head>
 <body>
@@ -46,8 +46,8 @@
       {{with .Post}}
       <section>
         <h2>{{.Title}}</h2>
+        <p class="datetime">{{.Author}} {{.CreatedAt}}</p>
         <div>{{.Text}}</div>
-        <p class="datetime">Опубликовано: {{.CreatedAt}}, обновлено: {{.UpdatedAt}}</p>
       </section>
       {{end}}
       <!-- Comment #4: Plugin Code -->
