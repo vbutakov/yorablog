@@ -17,34 +17,27 @@
     <h1>YoraBlog - поэма о кошках</h1>
     <nav class="menu">
       <ul>
-        <li><a href="/">На главную</a></li>
-        <li><a href="/create/">Создать статью</a></li>
+        <li><a class="round-button" href="/"><i class="material-icons">home</i></a></li>
+        <li><a class="round-button" href="/create/"><i class="material-icons">add</i></a></li>
       </ul>
     </nav>
   </header>
-  <div class="flex-container">
     <article>
       {{range .Posts}}
-      <section>
-        <h2><a href="/post/{{.ID}}">{{.Title}}</a></h2>
-        <p>{{.Annotation}}</p>
+      <section class="post-card">
+        <h2>{{.Title}}</h2>
         <p class="datetime">{{.Author}} {{.CreatedAt}}</p>
+        <p>{{.Annotation}}</p>
+		<div class="simple-button"><a href="/post/{{.ID}}">ПОДРОБНЕЕ</a></div>
       </section>
       {{end}}
       <nav class="pager">
         <ul>
-          <li><a href="{{.PrevPageURL}}"><< Предыдущие</a></li>
-          <li><a href="{{.NextPageURL}}">Следующие >></a></li>
+          <li class="simple-button"><a href="{{.PrevPageURL}}"><< Предыдущие</a></li>
+          <li class="simple-button"><a href="{{.NextPageURL}}">Следующие >></a></li>
         </ul>
       </nav>
     </article>
-  <aside>
-    <p>Архив и все такое</p>
-    <p>Приколы</p>
-    <p>Напиши мне</p>
-    <p>Случайное</p>
-  </aside>
-  </div>
   <footer>
     Copyright <a href="mailto:vbutakov@gmail.com">vbutakov@gmail.com</a><br /><br />
     <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>

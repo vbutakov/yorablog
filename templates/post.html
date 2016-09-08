@@ -35,13 +35,12 @@
     <h1>YoraBlog - поэма о кошках</h1>
     <nav class="menu">
       <ul>
-        <li><a href="/">На главную</a></li>
-        <li><a href="/create/">Создать статью</a></li>
-        <li><a href="/edit/{{.Post.ID}}">Редактировать</a></li>
+        <li><a class="round-button" href="/"><i class="material-icons">home</i></a></li>
+        <li><a class="round-button" href="/create/"><i class="material-icons">add</i></a></li>
+        <li><a class="round-button" href="/edit/{{.Post.ID}}"><i class="material-icons">edit</i></a></li>
       </ul>
     </nav>
   </header>
-  <div class="flex-container">
     <article>
       {{with .Post}}
       <section>
@@ -55,13 +54,6 @@
       <div class="fb-comments" data-href="{{.OGURL}}" data-numposts="10" data-width="100%" ></div>
       <!-- Comment #4: Plugin Code -->
     </article>
-    <aside>
-      <p>Архив и все такое</p>
-      <p>Приколы</p>
-      <p>Напиши мне</p>
-      <p>Случайное</p>
-    </aside>
-  </div>
   <footer>
     Copyright <a href="mailto:vbutakov@gmail.com">vbutakov@gmail.com</a><br /><br />
     <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
