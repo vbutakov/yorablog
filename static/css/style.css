@@ -2,44 +2,80 @@
 /* base palette:
 
 As hex codes:
-.color-primary-0 { color: #582A72 }	Main Primary color
-.color-primary-1 { color: #9775AA }
-.color-primary-2 { color: #764B8E }
-.color-primary-3 { color: #3D1255 }
-.color-primary-4 { color: #260339 }
-
-As RGBa codes:
-.rgba-primary-0 { color: rgba( 88, 42,114,1) } Main Primary color
-.rgba-primary-1 { color: rgba(151,117,170,1) }
-.rgba-primary-2 { color: rgba(118, 75,142,1) }
-.rgba-primary-3 { color: rgba( 61, 18, 85,1) }
-.rgba-primary-4 { color: rgba( 38,  3, 57,1) }
+.color-primary-0 { color: #E0E0E0 }	dark grey
+.color-primary-1 { color: #F5F5F5 } grey
+.color-primary-2 { color: #FAFAFA } light grey
+.color-primary-3 { color: #FFFFFF } white
 
 */
+
+@import 'https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&subset=cyrillic';
+
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons';
+
+html {
+	background-color: #FAFAFA;
+}
 
 body {
     width: 50em;
     margin: auto;
-    font-family: Helvetica, sans-serif;
+    font-family: "Open Sans", sans-serif;
+	font-weight: lighter;
+}
+
+h1, h2, strong {
+	font-weight: normal;
 }
 
 header {
   display: block;
-  background-color: #3D1255;
-  color: #9775AA;
   padding: 2em 2em 0em 2em;
+  background-color: #E0E0E0;
+  background-image: url("/static/img/header_matras.jpg");
+  height: 158px;
 }
 
-nav.menu {
-  background-color: #3D1255;
-  color: #9775AA;
+header h1 {
+	color: #FFFFFF;
 }
+
+article {
+  display: block;
+  width: 100%;
+}
+
+section {
+	margin: 1em 0em 1em 0em;
+	box-shadow: 0px 0.2em 0.5em #E0E0E0;
+	background-color: #FFFFFF;
+	padding: 0.5em;
+}
+
+section h2 {
+	margin: 0.2em 0.2em 0.4em 0.2em;
+}
+
+section p {
+  margin: 0.2em;
+}
+
+.simple-button {
+	font-weight: bold;
+	padding: 0.4em 0.4em 0.4em 0.4em;
+}
+
+.simple-button a {
+	text-decoration: none;
+	color: #6666FF;
+}
+
 
 nav.menu ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 nav.menu ul li {
@@ -47,56 +83,27 @@ nav.menu ul li {
 }
 
 nav.menu ul li a {
-    display: block;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    color: #9775AA;
 }
 
-/* Change the link color to #111 (black) on hover */
-nav.menu ul li a:hover {
-    background-color: #764B8E;
-    color: #3D1255;
+.round-button {
+	display: block;
+	background-color: #FFFFFF;
+	box-shadow: 0em 0.3em 0.5em #A0A0A0;
+	margin: 0.5em 0.5em 0.5em 0.5em;
+	border-radius: 1.1em;
+	width: 2.2em;
+	height: 2.2em;
+	text-align: center;
 }
 
-.flex-container {
-  display: -webkit-flex;
-  display: flex;
-  justify-content: space-between;
-  /*border: 3px solid blue;*/
+nav.menu ul li a {
+	display: inline-block;
+	vertical-align: middle;
+	color: #000000;
 }
 
-aside {
-  display: block;
-  width: 12em;
-  background-color: #9775AA;
-  color: #3D1255;
-  /*border: 3px solid red;*/
-}
-
-article {
-  /*margin-right: 13em;*/
-  color: #3D1255;
-  display: block;
-  width: 37em;
-  /*border: 3px solid #73AD21;*/
-}
-
-section {
-  margin-top: 2em;
-}
-
-section:first-child {
-  margin-top: 1em;
-}
-
-section h2 {
-  margin: 0.2em;
-}
-
-section p {
-  margin: 0.2em;
+.material-icons {
+	font-size: 32px;
 }
 
 nav.pager {
@@ -121,27 +128,23 @@ nav.pager ul li a {
     padding: 14px 16px;
     margin: 0.2em;
     text-decoration: none;
-    color: #3D1255;
-    border: 1px solid #9775AA;
-}
-
-/* Change the link color to #111 (black) on hover */
-nav.pager ul li a:hover {
-    background-color: #764B8E;
-    color: #3D1255;
+    border: 1px solid #E0E0E0;
+	box-shadow: 0px 0.2em 0.5em #E0E0E0;
+	background-color: #FFFFFF;
 }
 
 footer {
   display: block;
-  background-color: #3D1255;
   color: #9775AA;
   padding: 2em;
+  background-color: #E0E0E0;
 }
 
 .datetime {
   font-style: italic;
   font-size: 0.7em;
   color: #582A72;
+  margin: 0.3em 0.3em 0.3em 0.3em;
 }
 
 .fb-like {
@@ -157,11 +160,15 @@ form.posts label {
 form.posts input[type="text"], form input[type="url"] {
   display: block;
   width: 100%;
+    font-family: "Open Sans", sans-serif;
+	font-weight: lighter;
 }
 
 form.posts textarea {
   display: block;
   width: 100%;
+    font-family: "Open Sans", sans-serif;
+	font-weight: lighter;
 }
 
 form.posts input[type="submit"]{
