@@ -76,7 +76,7 @@ func (pph PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	pp.OGDescription = pp.Post.Description
 	pp.OGImage = pp.Post.ImageURL
 	pp.OGTitle = pp.Post.Title
-	pp.OGType = "website"
+	pp.OGType = "article"
 	pp.OGURL = "http://" + r.Host + r.URL.String()
 
 	w.WriteHeader(http.StatusOK)

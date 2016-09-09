@@ -50,7 +50,8 @@
       </section>
       {{end}}
       <!-- Comment #4: Plugin Code -->
-      <div class="fb-like" data-href="{{.OGURL}}" data-layout="standard" data-action="like" data-size="large" data-show-faces="true" data-share="true"></div>
+	  <div class="fb-like" data-href="{{.OGURL}}" data-layout="button_count" data-action="like" data-size="small" data-show-faces="true" data-share="false"></div>
+	  <div class="fb-share-button" data-href="{{.OGURL}}" data-layout="button" data-size="small" data-mobile-iframe="false"><a class="fb-xfbml-parse-ignore" target="_blank">Поделиться</a></div>
       <div class="fb-comments" data-href="{{.OGURL}}" data-numposts="10" data-width="100%" ></div>
       <!-- Comment #4: Plugin Code -->
     </article>
