@@ -23,6 +23,8 @@ func main() {
 	LoginHandler := InitLoginPageHandler(BaseTemplatesPath)
 	LogoutHandler := &LogoutPageHandler{}
 	CreateUserHandler := InitCreateUserPageHandler(BaseTemplatesPath)
+	ForgotPasswordHandler := InitForgotPasswordPageHandler(BaseTemplatesPath)
+	RestorePasswordHandler := InitRestorePasswordPageHandler(BaseTemplatesPath)
 
 	IndexHandler := InitIndexPageHandler(BaseTemplatesPath)
 	PostHandler := InitPostPageHandler(BaseTemplatesPath)
@@ -34,6 +36,9 @@ func main() {
 	http.Handle("/login/", SessionRequired(LoginHandler))
 	http.Handle("/logout/", SessionRequired(LogoutHandler))
 	http.Handle("/createuser/", SessionRequired(CreateUserHandler))
+	http.Handle("/forgotpassword/", SessionRequired(ForgotPasswordHandler))
+	http.Handle("/restorepassword/", SessionRequired(RestorePasswordHandler))
+
 	http.Handle("/static/", http.StripPrefix("/static/",
 		http.FileServer(http.Dir(BaseStaticPath))))
 

@@ -24,12 +24,12 @@ func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("SessionID")
 	if err != nil {
 		needSetCookie = true
-		sessionID = createSessionID()
+		sessionID = CreateSessionID()
 	} else {
 		sessionID = cookie.Value
 		if !DBSessionValid(sessionID) {
 			needSetCookie = true
-			sessionID = createSessionID()
+			sessionID = CreateSessionID()
 		}
 	}
 
@@ -42,13 +42,17 @@ func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		cookie.Value = sessionID
 		cookie.Path = "/"
 		cookie.Expires = expires
+
+		// have to reload page because it need cookie
 		w.Header().Add("Set-Cookie", cookie.String())
+		http.Redirect(w, r, r.URL.String(), http.StatusSeeOther)
+		return
 	}
 
 	h.parent.ServeHTTP(w, r)
 }
 
-func createSessionID() string {
+func CreateSessionID() string {
 	nsec := time.Now().UnixNano()
 	rand.Seed(nsec)
 	r := rand.Int63n(1e9)

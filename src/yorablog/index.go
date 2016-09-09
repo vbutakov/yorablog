@@ -52,7 +52,7 @@ func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cookie, err := r.Cookie("SessionID")
 	if err != nil {
-		log.Printf("Error during cookie read on index page: %v\n", err)
+		log.Printf("Error during cookie read from on index page: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

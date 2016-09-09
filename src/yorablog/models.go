@@ -317,3 +317,76 @@ func DBLogoutUserFromSession(sessionID string) error {
 		sessionID)
 	return err
 }
+
+// DBEmailExist check if user withspecified email exist in db
+func DBEmailExist(email string) bool {
+	row := DBConnection.QueryRow(
+		`SELECT u.Email FROM Users u WHERE u.Email = ?;`,
+		email)
+
+	var s string
+	err := row.Scan(&s)
+	if err == sql.ErrNoRows {
+		return false
+	} else if err != nil {
+		return false
+	} else {
+		return true
+	}
+}
+
+// DBCreateRestorePasswordID create restore token and return it
+func DBCreateRestorePasswordID(email string) (string, error) {
+	token := CreateSessionID()
+	_, err := DBConnection.Exec(
+		`INSERT INTO RestorePasswords (id, Email)
+        VALUES(?,?);`,
+		token, email)
+	return token, err
+}
+
+// DBGetEmailByRestoreToken return email for specified restore password token
+func DBGetEmailByRestoreToken(token string) (string, error) {
+	res := DBConnection.QueryRow(
+		`SELECT Email FROM RestorePasswords WHERE id = ?;`,
+		token)
+
+	var email string
+	err := res.Scan(&email)
+
+	return email, err
+}
+
+// DBUpdatePasswordByRestoreToken update user password by specified restore token
+func DBUpdatePasswordByRestoreToken(token, email, password string) error {
+	tx, err := DBConnection.Begin()
+	if err != nil {
+		return err
+	}
+
+	passwordHash := getPasswordHash(email, password)
+
+	_, err = tx.Exec(
+		`UPDATE Users u INNER JOIN RestorePasswords rp ON u.Email = rp.Email
+    SET u.Password = ?
+    WHERE rp.id = ?;`,
+		passwordHash, token)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	_, err = tx.Exec(
+		`DELETE FROM RestorePasswords
+    WHERE id = ?;`,
+		token)
+
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	_ = tx.Commit()
+
+	return err
+}
