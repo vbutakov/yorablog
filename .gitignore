@@ -28,3 +28,5 @@ _testmain.go
 *~
 start_blog.sh
 sync.sh
+sync_photos.sh
+photos

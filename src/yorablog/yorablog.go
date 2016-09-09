@@ -41,6 +41,8 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/",
 		http.FileServer(http.Dir(BaseStaticPath))))
+	http.Handle("/photos/", http.StripPrefix("/photos/",
+		http.FileServer(http.Dir(BasePhotosPath))))
 
 	http.Handle("/", SessionRequired(IndexHandler))
 	http.Handle("/post/", SessionRequired(PostHandler))

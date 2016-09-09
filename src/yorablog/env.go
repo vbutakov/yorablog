@@ -12,6 +12,9 @@ var (
 	// BaseStaticPath is the path for static files
 	BaseStaticPath string
 
+	// BasePhotosPath is the path for photos
+	BasePhotosPath string
+
 	// BaseTemplatesPath is the path for templates files
 	BaseTemplatesPath string
 
@@ -36,6 +39,11 @@ func InitEnv() error {
 	BaseStaticPath = os.Getenv("BASESTATICPATH")
 	if len(BaseStaticPath) == 0 {
 		return errors.New("Error! Env variable BASESTATICPATH is not defined.\n")
+	}
+
+	BasePhotosPath = os.Getenv("BASEPHOTOSPATH")
+	if len(BasePhotosPath) == 0 {
+		return errors.New("Error! Env variable BASEPHOTOSPATH is not defined.\n")
 	}
 
 	BaseTemplatesPath = os.Getenv("BASETEMPLATESPATH")
