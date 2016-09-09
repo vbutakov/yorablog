@@ -79,7 +79,7 @@ func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var postID int
 		postID, err = DBInsertPost(post, user.ID)
 		if err != nil {
-			log.Printf("Error during insert post in DB: %v\n", err)
+			log.Printf("Error during insert post in DB: %v\nUserID: %v\n", err, user.ID)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
