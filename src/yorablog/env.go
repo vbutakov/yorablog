@@ -17,6 +17,13 @@ var (
 
 	// BaseDSN is the dsn for db connect
 	BaseDSN string
+
+	//SMTP params
+	SMTPServer string
+	SMTPPort   string
+	SMTPUser   string
+	SMTPPass   string
+	SMTPFrom   string
 )
 
 // InitEnv initialize all global params from env variables
@@ -39,6 +46,31 @@ func InitEnv() error {
 	BaseDSN = os.Getenv("BASEDSN")
 	if len(BaseDSN) == 0 {
 		return errors.New("Error! Env variable BASEDSN is not defined.\n")
+	}
+
+	SMTPServer = os.Getenv("SMTPSERVER")
+	if len(SMTPServer) == 0 {
+		return errors.New("Error! Env variable SMTPSERVER is not defined.\n")
+	}
+
+	SMTPPort = os.Getenv("SMTPPORT")
+	if len(SMTPPort) == 0 {
+		return errors.New("Error! Env variable SMTPPORT is not defined.\n")
+	}
+
+	SMTPUser = os.Getenv("SMTPUSER")
+	if len(SMTPUser) == 0 {
+		return errors.New("Error! Env variable SMTPUSER is not defined.\n")
+	}
+
+	SMTPPass = os.Getenv("SMTPPASS")
+	if len(SMTPPass) == 0 {
+		return errors.New("Error! Env variable SMTPPASS is not defined.\n")
+	}
+
+	SMTPFrom = os.Getenv("SMTPFROM")
+	if len(SMTPFrom) == 0 {
+		return errors.New("Error! Env variable SMTPFrom is not defined.\n")
 	}
 
 	return nil
