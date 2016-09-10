@@ -91,10 +91,10 @@ nav.menu ul li {
 	display: block;
 	background-color: #FF9933;/*#FFFFFF;*/
 	box-shadow: 0em 0.3em 0.5em #808080;
-	margin: 0.5em 0.5em 0.5em 0.5em;
+	margin: 0.5em 1em 0.5em 1em;
 	border-radius: 50%;
-	width: 42px;
-	height: 42px;
+	width: 3em;
+	height: 3em;
 	text-align: center;
 }
 
@@ -103,8 +103,8 @@ nav.menu ul li a {
 }
 
 .material-icons {
-	line-height: 42px;
-	font-size: 36px;
+	line-height: 1.2;
+	font-size: 2.5em;
 }
 
 .home-button {
