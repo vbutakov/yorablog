@@ -63,11 +63,11 @@ CKEDITOR.dialog.add( 'videoDialog', function( editor ) {
             // edit_btn.setAttribute('class', 'edit-videodetector');
             // p.append(edit_btn);
 
-            var remove_btn = new CKEDITOR.dom.element('input');
-            remove_btn.setAttribute('type', 'button');
-            remove_btn.setAttribute('value', 'Remove video');
-            remove_btn.setAttribute('class', 'remove-videodetector');
-            p.append(remove_btn);
+            // var remove_btn = new CKEDITOR.dom.element('input');
+            // remove_btn.setAttribute('type', 'button');
+            // remove_btn.setAttribute('value', 'Remove video');
+            // remove_btn.setAttribute('class', 'remove-videodetector');
+            // p.append(remove_btn);
 
             editor.insertElement(p);
 
@@ -75,10 +75,10 @@ CKEDITOR.dialog.add( 'videoDialog', function( editor ) {
             //     new CKEDITOR.dialog(editor, 'videoDialog');
             // });
 
-            remove_btn.on('click', function(){
-                var to_remove = remove_btn.getParent();
-                to_remove.remove();
-            });
+            // remove_btn.on('click', function(){
+            //     var to_remove = remove_btn.getParent();
+            //     to_remove.remove();
+            // });
         }
     };
 });
