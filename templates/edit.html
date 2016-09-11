@@ -42,8 +42,9 @@
             {{.Text}}
           </textarea>
           <script>
+            CKEDITOR.plugins.addExternal( 'videodetector', '/static/videodetector/', 'plugin.js' );
             CKEDITOR.replace( 'annotation' );
-            CKEDITOR.replace( 'posttext' );
+            CKEDITOR.replace( 'posttext', { extraPlugins: 'videodetector'} );
           </script>
           <input type="submit" />
         </form>
