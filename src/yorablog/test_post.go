@@ -31,8 +31,8 @@ type TestPostHandler struct {
 func InitTestPostHandler(db *sql.DB, templatesPath string) *TestPostHandler {
 
 	pathes := make([]string, 2)
-	pathes[1] = filepath.Join(templatesPath, "test_post.html")
 	pathes[0] = filepath.Join(templatesPath, "layout.html")
+	pathes[1] = filepath.Join(templatesPath, "test_post.html")
 
 	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {
