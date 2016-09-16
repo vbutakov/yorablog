@@ -14,11 +14,14 @@ func main() {
 
 	InitURLPatterns() // panic if regexps not compile
 
-	err = InitDB()
+	db, err := InitDB()
 	if err != nil {
 		log.Panicln(err)
 	}
-	defer DBConnection.Close()
+	defer db.Close()
+	DBConnection = db
+
+	testHandler := InitTestPostHandler(db, BaseTemplatesPath)
 
 	LoginHandler := InitLoginPageHandler(BaseTemplatesPath)
 	LogoutHandler := &LogoutPageHandler{}
@@ -48,6 +51,8 @@ func main() {
 	http.Handle("/post/", SessionRequired(PostHandler))
 	http.Handle("/edit/", SessionRequired(LoginRequired(EditHandler)))
 	http.Handle("/create/", SessionRequired(LoginRequired(CreateHandler)))
+
+	http.Handle("/test_post/", SessionRequired(testHandler))
 
 	log.Printf("Listen on %v.\n", BaseServeAddr)
 

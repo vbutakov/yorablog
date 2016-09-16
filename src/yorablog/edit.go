@@ -18,13 +18,13 @@ type EditPage struct {
 
 // EditPageHandler is a handler for edit page processing
 type EditPageHandler struct {
-	Template *yotemplate.YoTemplate
+	Template *yotemplate.Template
 }
 
 // InitEditPageHandler initialize EditPageHandler struct
 func InitEditPageHandler(templatesPath string) *EditPageHandler {
 	editTemplatePath := filepath.Join(templatesPath, "edit.html")
-	editTemplate, err := yotemplate.InitYoTemplate(editTemplatePath)
+	editTemplate, err := yotemplate.InitTemplate(editTemplatePath)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -58,7 +58,7 @@ func (eph EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		sessionID := cookie.Value
-		user, err := DBGetUserBySessionID(sessionID)
+		user, err := DBGetUserBySessionID(DBConnection, sessionID)
 		if err == nil {
 			ep.UserName = user.Name
 		}
@@ -69,7 +69,7 @@ func (eph EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		ep.Post, err = DBGetPostByID(postID)
+		ep.Post, err = DBGetPostByID(DBConnection, postID)
 		if err != nil {
 			log.Printf("Error during db query for edit page: %v\n", err)
 			http.NotFound(w, r)

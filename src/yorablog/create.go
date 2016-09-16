@@ -17,13 +17,13 @@ type CreatePage struct {
 
 // CreatePageHandler is a handler for edit create processing
 type CreatePageHandler struct {
-	Template *yotemplate.YoTemplate
+	Template *yotemplate.Template
 }
 
 // InitCreatePageHandler initialize CreatePageHandler struct
 func InitCreatePageHandler(templatesPath string) *CreatePageHandler {
 	createTemplatePath := filepath.Join(templatesPath, "create.html")
-	createTemplate, err := yotemplate.InitYoTemplate(createTemplatePath)
+	createTemplate, err := yotemplate.InitTemplate(createTemplatePath)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -44,7 +44,7 @@ func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sessionID := cookie.Value
-	user, err := DBGetUserBySessionID(sessionID)
+	user, err := DBGetUserBySessionID(DBConnection, sessionID)
 	if err == nil {
 		cp.UserName = user.Name
 	}

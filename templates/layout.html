@@ -1,39 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="utf-8"/>
   <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
   <link rel="icon" type="image/png" href="/static/img/black-evil-cat.png">
-  <title>YoraBlog - Login</title>
+  <title>YoraBlog - поэма о кошках</title>
 </head>
 <body>
   <header>
+    {{if .UserName}}
+    <div class="currentUser">
+      <p>{{.UserName}}</p>
+      <a href="/logout/">Выйти</a>
+    </div>
+    {{end}}
     <h1>YoraBlog - поэма о кошках</h1>
     <nav class="menu">
       <ul>
         <li><a class="round-button home-button" href="/"><i class="material-icons">home</i></a></li>
+        <li><a class="round-button create-button" href="/create/"><i class="material-icons">add</i></a></li>
       </ul>
     </nav>
   </header>
-    <article>
-      <section>
-        {{if .ErrorMessage}}
-        <div class="errormessage">
-          {{.ErrorMessage}}
-        </div>
-        {{end}}
-        <form method="POST" class="login">
-          <label for="email" >Email:</label>
-          <input type="text" id="email" name="email" class="form_input" value="{{.Email}}" />
-          <label for="password" >Password:</label>
-          <input type="password" id="password" name="password" class="form_input" />
-          <input type="submit" />
-        </form>
-        <br/>
-        <a href="/createuser/">Зарегистрировать пользователя</a> | <a href="/forgotpassword/">Восстановить пароль</a>
-        <br/>
-      </section>
-    </article>
+
+    {{template "DATA" .}}
+
   <footer>
     Copyright <a href="mailto:vbutakov@gmail.com">vbutakov@gmail.com</a><br /><br />
     <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>

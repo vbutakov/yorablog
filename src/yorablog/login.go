@@ -18,7 +18,7 @@ type LoginPage struct {
 
 // LoginPageHandler - handler for login pages
 type LoginPageHandler struct {
-	LoginTemplates *yotemplate.YoTemplate
+	LoginTemplates *yotemplate.Template
 }
 
 // LoginRequiredHandler structure for checking if user login required
@@ -52,7 +52,7 @@ func (h LoginRequiredHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 // InitLoginPageHandler creates and inits login page handler
 func InitLoginPageHandler(templatesPath string) *LoginPageHandler {
 	loginTemplatePath := filepath.Join(templatesPath, "login.html")
-	loginTemplates, err := yotemplate.InitYoTemplate(loginTemplatePath)
+	loginTemplates, err := yotemplate.InitTemplate(loginTemplatePath)
 	if err != nil {
 		log.Panic(err)
 	}

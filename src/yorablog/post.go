@@ -22,13 +22,13 @@ type PostPage struct {
 
 // PostPageHandler is a handler for post page processing
 type PostPageHandler struct {
-	Template *yotemplate.YoTemplate
+	Template *yotemplate.Template
 }
 
 // InitPostPageHandler initialize PostPageHandler struct
 func InitPostPageHandler(templatesPath string) *PostPageHandler {
 	postTemplatePath := filepath.Join(templatesPath, "post.html")
-	postTemplate, err := yotemplate.InitYoTemplate(postTemplatePath)
+	postTemplate, err := yotemplate.InitTemplate(postTemplatePath)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -55,7 +55,7 @@ func (pph PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sessionID := cookie.Value
-	user, err := DBGetUserBySessionID(sessionID)
+	user, err := DBGetUserBySessionID(DBConnection, sessionID)
 	if err == nil {
 		pp.UserName = user.Name
 	}
@@ -66,7 +66,7 @@ func (pph PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pp.Post, err = DBGetPostByID(postID)
+	pp.Post, err = DBGetPostByID(DBConnection, postID)
 	if err != nil {
 		log.Printf("Error during db query for post page: %v\n", err)
 		http.NotFound(w, r)

@@ -16,13 +16,13 @@ type ForgotPasswordPage struct {
 
 // ForgotPasswordPageHandler is a handler for page processing
 type ForgotPasswordPageHandler struct {
-	Template *yotemplate.YoTemplate
+	Template *yotemplate.Template
 }
 
 // InitForgotPasswordPageHandler initialize ForgotPasswordPageHandler struct
 func InitForgotPasswordPageHandler(templatesPath string) *ForgotPasswordPageHandler {
 	templatePath := filepath.Join(templatesPath, "forgotpassword.html")
-	templ, err := yotemplate.InitYoTemplate(templatePath)
+	templ, err := yotemplate.InitTemplate(templatePath)
 	if err != nil {
 		log.Panic(err)
 	}

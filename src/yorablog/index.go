@@ -20,13 +20,13 @@ type IndexPage struct {
 
 // IndexPageHandler is a handler for page processing
 type IndexPageHandler struct {
-	Template *yotemplate.YoTemplate
+	Template *yotemplate.Template
 }
 
 // InitIndexPageHandler initialize IndexPageHandler struct
 func InitIndexPageHandler(templatesPath string) *IndexPageHandler {
 	indexTemplatePath := filepath.Join(templatesPath, "index.html")
-	indexTemplate, err := yotemplate.InitYoTemplate(indexTemplatePath)
+	indexTemplate, err := yotemplate.InitTemplate(indexTemplatePath)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -57,7 +57,7 @@ func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sessionID := cookie.Value
-	user, err := DBGetUserBySessionID(sessionID)
+	user, err := DBGetUserBySessionID(DBConnection, sessionID)
 	if err == nil {
 		ip.UserName = user.Name
 	}

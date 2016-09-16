@@ -18,13 +18,13 @@ type CreateUserPage struct {
 
 // CreateUserPageHandler - handler for create user pages
 type CreateUserPageHandler struct {
-	CreateUserTemplates *yotemplate.YoTemplate
+	CreateUserTemplates *yotemplate.Template
 }
 
 // InitCreateUserPageHandler creates and inits login page handler
 func InitCreateUserPageHandler(templatesPath string) *CreateUserPageHandler {
 	createUserTemplatePath := filepath.Join(templatesPath, "createuser.html")
-	createUserTemplates, err := yotemplate.InitYoTemplate(createUserTemplatePath)
+	createUserTemplates, err := yotemplate.InitTemplate(createUserTemplatePath)
 	if err != nil {
 		log.Panic(err)
 	}

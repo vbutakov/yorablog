@@ -46,13 +46,13 @@ var (
 )
 
 // InitDB initialize database connection
-func InitDB() (err error) {
-	DBConnection, err = sql.Open("mysql", BaseDSN)
+func InitDB() (*sql.DB, error) {
+	db, err := sql.Open("mysql", BaseDSN)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	DBConnection.SetMaxOpenConns(10)
-	return nil
+	db.SetMaxOpenConns(10)
+	return db, nil
 }
 
 // DBGetPosts returns fixed number of posts
@@ -105,8 +105,8 @@ func DBGetPosts(num, offset int) ([]Post, error) {
 }
 
 // DBGetPostByID find post byspecified id
-func DBGetPostByID(id int) (*Post, error) {
-	row := DBConnection.QueryRow(
+func DBGetPostByID(db *sql.DB, id int) (*Post, error) {
+	row := db.QueryRow(
 		`SELECT p.id, p.Title, p.Description, p.ImageURL, p.Annotation, p.PostText,
         u.Name AS AuthorName, p.CreatedAt, p.UpdatedAt
         FROM Posts p INNER JOIN Users u ON p.Author = u.id
@@ -272,8 +272,8 @@ func DBLoginUser(email, password string) (int, error) {
 }
 
 // DBGetUserBySessionID return user data for session
-func DBGetUserBySessionID(sessionID string) (*User, error) {
-	row := DBConnection.QueryRow(
+func DBGetUserBySessionID(db *sql.DB, sessionID string) (*User, error) {
+	row := db.QueryRow(
 		`SELECT
 			u.id,
 			u.Name,
