@@ -6,36 +6,43 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"yoradb"
 	"yotemplate"
 )
 
 // CreatePage is a struct for data on the create page
 type CreatePage struct {
-	Post     *Post
-	UserName string
+	Post         *yoradb.Post
+	UserName     string
+	ErrorMessage string
 }
 
 // CreatePageHandler is a handler for edit create processing
 type CreatePageHandler struct {
-	Template *yotemplate.Template
+	template *yotemplate.Template
+	db       *yoradb.DB
 }
 
 // InitCreatePageHandler initialize CreatePageHandler struct
-func InitCreatePageHandler(templatesPath string) *CreatePageHandler {
-	createTemplatePath := filepath.Join(templatesPath, "create.html")
-	createTemplate, err := yotemplate.InitTemplate(createTemplatePath)
+func InitCreatePageHandler(db *yoradb.DB, templatesPath string) *CreatePageHandler {
+
+	pathes := make([]string, 2)
+	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
+	pathes[1] = filepath.Join(templatesPath, "create.gohtml")
+
+	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {
 		log.Panic(err)
 	}
 	log.Println("Create page template is initialized.")
 
-	return &CreatePageHandler{Template: createTemplate}
+	return &CreatePageHandler{template: templ, db: db}
 }
 
 // CreatePageHandle - handler for create page
-func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	cp := &CreatePage{Post: &Post{}}
+	cp := &CreatePage{Post: &yoradb.Post{}}
 
 	cookie, err := r.Cookie("SessionID")
 	if err != nil {
@@ -44,7 +51,7 @@ func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sessionID := cookie.Value
-	user, err := DBGetUserBySessionID(DBConnection, sessionID)
+	user, err := h.db.DBGetUserBySessionID(sessionID)
 	if err == nil {
 		cp.UserName = user.Name
 	}
@@ -59,7 +66,8 @@ func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusOK)
 
-		cph.Template.Execute(w, cp)
+		h.template.Execute(w, cp)
+
 	} else if r.Method == "POST" {
 
 		err := r.ParseForm()
@@ -68,7 +76,7 @@ func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		post := &Post{}
+		post := &yoradb.Post{}
 
 		post.Title = template.HTML(r.FormValue("title"))
 		post.Description = template.HTML(r.FormValue("description"))
@@ -77,10 +85,16 @@ func (cph CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		post.Text = template.HTML(r.FormValue("posttext"))
 
 		var postID int
-		postID, err = DBInsertPost(post, user.ID)
+		postID, err = h.db.DBInsertPost(post, user.ID)
 		if err != nil {
+			cp.Post = post
+			cp.ErrorMessage = err.Error()
+
 			log.Printf("Error during insert post in DB: %v\nUserID: %v\n", err, user.ID)
-			w.WriteHeader(http.StatusInternalServerError)
+
+			w.WriteHeader(http.StatusOK)
+			h.template.Execute(w, cp)
+
 			return
 		}
 

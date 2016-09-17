@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"yoradb"
 	"yotemplate"
 )
 
@@ -16,19 +17,24 @@ type ForgotPasswordPage struct {
 
 // ForgotPasswordPageHandler is a handler for page processing
 type ForgotPasswordPageHandler struct {
-	Template *yotemplate.Template
+	template *yotemplate.Template
+	db       *yoradb.DB
 }
 
 // InitForgotPasswordPageHandler initialize ForgotPasswordPageHandler struct
-func InitForgotPasswordPageHandler(templatesPath string) *ForgotPasswordPageHandler {
-	templatePath := filepath.Join(templatesPath, "forgotpassword.html")
-	templ, err := yotemplate.InitTemplate(templatePath)
+func InitForgotPasswordPageHandler(db *yoradb.DB, templatesPath string) *ForgotPasswordPageHandler {
+
+	pathes := make([]string, 2)
+	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
+	pathes[1] = filepath.Join(templatesPath, "forgotpassword.gohtml")
+
+	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {
 		log.Panic(err)
 	}
 	log.Println("Forgot password page template is initialized.")
 
-	return &ForgotPasswordPageHandler{Template: templ}
+	return &ForgotPasswordPageHandler{template: templ, db: db}
 }
 
 // ForgotPasswordPageHandler - handler for web page
@@ -37,7 +43,7 @@ func (h ForgotPasswordPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	if r.Method == "GET" {
 		data := &ForgotPasswordPage{}
 		w.WriteHeader(http.StatusOK)
-		h.Template.Execute(w, data)
+		h.template.Execute(w, data)
 		return
 	} else if r.Method == "POST" {
 		email := r.FormValue("email")
@@ -45,17 +51,23 @@ func (h ForgotPasswordPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 			UserEmail: email,
 		}
 
-		if !DBEmailExist(email) {
+		if !h.db.DBEmailExist(email) {
 			data.ErrorMessage = "Пользователя с таким email-ом не зарегистрировано."
 			w.WriteHeader(http.StatusOK)
-			h.Template.Execute(w, data)
+			h.template.Execute(w, data)
 			return
 		}
 
-		id, err := DBCreateRestorePasswordID(email)
+		token := CreateSessionID()
+		id, err := h.db.DBCreateRestorePasswordID(email, token)
 		if err != nil {
+			data.ErrorMessage = err.Error()
+
 			log.Printf("Error during password restore: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+
+			w.WriteHeader(http.StatusOK)
+			h.template.Execute(w, data)
+
 			return
 		}
 
@@ -68,8 +80,9 @@ func (h ForgotPasswordPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		}
 
 		data.Message = "На email выслано письмо с инструкцией как восстановить пароль."
+
 		w.WriteHeader(http.StatusOK)
-		h.Template.Execute(w, data)
+		h.template.Execute(w, data)
 		return
 	}
 }

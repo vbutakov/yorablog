@@ -1,0 +1,19 @@
+{{define "DATA"}}
+<article>
+  <script type="text/javascript">
+    <!-- Добавить код установки мета тегов для OpenGraph -->
+  </script>
+  {{with .Post}}
+  <section>
+    <h2>{{.Title}}</h2>
+    <p class="datetime">{{.Author}} {{.CreatedAt.Format "2006-01-02"}}</p>
+    <div>{{.Text}}</div>
+  </section>
+  {{end}}
+  <!-- Comment #4: Plugin Code -->
+  <div class="fb-like" data-href="{{.OGURL}}" data-layout="button_count" data-action="like" data-size="small" data-show-faces="true" data-share="false"></div>
+  <div class="fb-share-button" data-href="{{.OGURL}}" data-layout="button" data-size="small" data-mobile-iframe="false"><a class="fb-xfbml-parse-ignore" target="_blank">Поделиться</a></div>
+  <div class="fb-comments" data-href="{{.OGURL}}" data-numposts="10" data-width="100%" ></div>
+  <!-- Comment #4: Plugin Code -->
+</article>
+{{end}}

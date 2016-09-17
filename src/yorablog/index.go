@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"yoradb"
 	"yotemplate"
 )
 
@@ -15,28 +16,34 @@ type IndexPage struct {
 	PrevPageURL    string
 	NextPageURL    string
 	UserName       string
-	Posts          []Post
+	Posts          []yoradb.Post
+	ErrorMessage   string
 }
 
 // IndexPageHandler is a handler for page processing
 type IndexPageHandler struct {
-	Template *yotemplate.Template
+	template *yotemplate.Template
+	db       *yoradb.DB
 }
 
 // InitIndexPageHandler initialize IndexPageHandler struct
-func InitIndexPageHandler(templatesPath string) *IndexPageHandler {
-	indexTemplatePath := filepath.Join(templatesPath, "index.html")
-	indexTemplate, err := yotemplate.InitTemplate(indexTemplatePath)
+func InitIndexPageHandler(db *yoradb.DB, templatesPath string) *IndexPageHandler {
+
+	pathes := make([]string, 2)
+	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
+	pathes[1] = filepath.Join(templatesPath, "index.gohtml")
+
+	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {
 		log.Panic(err)
 	}
 	log.Println("Index page template is initialized.")
 
-	return &IndexPageHandler{Template: indexTemplate}
+	return &IndexPageHandler{template: templ, db: db}
 }
 
 // IndexPageHandle - handler for index page
-func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res := IndexURLPattern.FindStringSubmatch(r.URL.Path)
 	if res == nil {
@@ -57,7 +64,7 @@ func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sessionID := cookie.Value
-	user, err := DBGetUserBySessionID(DBConnection, sessionID)
+	user, err := h.db.DBGetUserBySessionID(sessionID)
 	if err == nil {
 		ip.UserName = user.Name
 	}
@@ -93,7 +100,7 @@ func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	ip.Posts, err = DBGetPosts(10, offset)
+	ip.Posts, err = h.db.DBGetPosts(10, offset)
 	if err != nil {
 		log.Printf("Error during db query for index page: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -102,5 +109,5 @@ func (iph IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 
-	iph.Template.Execute(w, ip)
+	h.template.Execute(w, ip)
 }

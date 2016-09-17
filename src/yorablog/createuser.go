@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"yoradb"
 	"yotemplate"
 )
 
@@ -18,23 +19,28 @@ type CreateUserPage struct {
 
 // CreateUserPageHandler - handler for create user pages
 type CreateUserPageHandler struct {
-	CreateUserTemplates *yotemplate.Template
+	template *yotemplate.Template
+	db       *yoradb.DB
 }
 
 // InitCreateUserPageHandler creates and inits login page handler
-func InitCreateUserPageHandler(templatesPath string) *CreateUserPageHandler {
-	createUserTemplatePath := filepath.Join(templatesPath, "createuser.html")
-	createUserTemplates, err := yotemplate.InitTemplate(createUserTemplatePath)
+func InitCreateUserPageHandler(db *yoradb.DB, templatesPath string) *CreateUserPageHandler {
+
+	pathes := make([]string, 2)
+	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
+	pathes[1] = filepath.Join(templatesPath, "createuser.gohtml")
+
+	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {
 		log.Panic(err)
 	}
 	log.Println("CreateUser page templates are initialized.")
 
-	return &CreateUserPageHandler{CreateUserTemplates: createUserTemplates}
+	return &CreateUserPageHandler{template: templ, db: db}
 }
 
 // CreateUserHandle - handler for login page
-func (cuph CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 		var sendFormAgain = false
@@ -66,13 +72,18 @@ func (cuph CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 		if sendFormAgain {
 			w.WriteHeader(http.StatusOK)
-			cuph.CreateUserTemplates.Execute(w, cup)
+			h.template.Execute(w, cup)
 		} else {
 			// create new user
-			userID, err := DBCreateUser(cup.Name, cup.Email, cup.Password)
+			userID, err := h.db.DBCreateUser(cup.Name, cup.Email, cup.Password)
 			if err != nil {
+				cup.ErrorMessage = err.Error()
+
 				log.Printf("Error during user create: %v\n", err)
-				w.WriteHeader(http.StatusInternalServerError)
+
+				w.WriteHeader(http.StatusOK)
+				h.template.Execute(w, cup)
+
 				return
 			}
 
@@ -83,10 +94,15 @@ func (cuph CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 				return
 			}
 			sessionID := cookie.Value
-			err = DBUpdateSessionWithUserID(sessionID, userID)
+			err = h.db.DBUpdateSessionWithUserID(sessionID, userID)
 			if err != nil {
+				cup.ErrorMessage = err.Error()
+
 				log.Printf("Error during user create: %v\n", err)
-				w.WriteHeader(http.StatusInternalServerError)
+
+				w.WriteHeader(http.StatusOK)
+				h.template.Execute(w, cup)
+
 				return
 			}
 			http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -99,7 +115,7 @@ func (cuph CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 		w.WriteHeader(http.StatusOK)
 
-		cuph.CreateUserTemplates.Execute(w, cup)
+		h.template.Execute(w, cup)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
