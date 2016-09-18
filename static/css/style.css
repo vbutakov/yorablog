@@ -22,11 +22,21 @@ html {
 }
 
 body {
+  width: 100%;
+  margin: auto;
+  font-family: "Open Sans", sans-serif;
+  font-weight: lighter;
+}
+
+@media only screen and (min-width: 800px) {
+  body {
     width: 50em;
     margin: auto;
     font-family: "Open Sans", sans-serif;
-	font-weight: lighter;
+    font-weight: lighter;
+  }
 }
+
 
 h1, h2, strong {
 	font-weight: normal;
@@ -44,9 +54,15 @@ header h1 {
 	color: #FFFFFF;
 }
 
+header h1 a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
 article {
   display: block;
   width: 100%;
+  position: relative;
 }
 
 section {
@@ -75,8 +91,12 @@ section p {
 }
 
 nav.menu {
-	position: relative;
+/*	position: relative;
 	top: 42px;
+*/
+  position: absolute;
+  top: -3em;
+  z-index: 5;
 }
 
 nav.menu ul {

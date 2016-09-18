@@ -13,6 +13,7 @@ type ForgotPasswordPage struct {
 	UserEmail    string
 	ErrorMessage string
 	Message      string
+	UserName     string
 }
 
 // ForgotPasswordPageHandler is a handler for page processing

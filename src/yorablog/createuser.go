@@ -15,6 +15,7 @@ type CreateUserPage struct {
 	Password        string
 	ConfirmPassword string
 	ErrorMessage    string
+	UserName        string
 }
 
 // CreateUserPageHandler - handler for create user pages

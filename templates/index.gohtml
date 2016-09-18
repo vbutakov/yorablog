@@ -1,6 +1,13 @@
 {{define "DATA"}}
 
 <article>
+
+  <nav class="menu">
+    <ul>
+      <li><a class="round-button create-button" href="/create/"><i class="material-icons">add</i></a></li>
+    </ul>
+  </nav>
+
   {{if .ErrorMessage}}
   <div class="errormessage">
     {{.ErrorMessage}}

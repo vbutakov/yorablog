@@ -16,6 +16,7 @@ type RestorePasswordPage struct {
 	PasswordConfirm string
 	Message         string
 	ErrorMessage    string
+	UserName        string
 }
 
 // RestorePasswordPageHandler is a handler for page processing

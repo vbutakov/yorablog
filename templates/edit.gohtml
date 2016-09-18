@@ -1,6 +1,13 @@
 {{define "DATA"}}
 <script src="//cdn.ckeditor.com/4.5.11/standard/ckeditor.js"></script>
 <article>
+
+  <nav class="menu">
+    <ul>
+      <li><a class="round-button create-button" href="/create/"><i class="material-icons">add</i></a></li>
+    </ul>
+  </nav>
+
   {{if .ErrorMessage}}
   <div class="errormessage">
     {{.ErrorMessage}}
@@ -16,7 +23,7 @@
       <label for="imageurl">URL картинки (og image):</label>
       <input id="imageurl" name="imageurl" type="url" value="{{.ImageURL}}" />
       <label for="annotation">Аннотация (отбражается на главной странице):</label>
-      <textarea id="annotation" name="annotation" rows="10">
+      <textarea id="annotation" name="annotation" rows="5">
         {{.Annotation}}
       </textarea>
       <label for="posttext">Текст статьи:</label>
