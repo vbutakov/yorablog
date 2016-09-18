@@ -1,0 +1,21 @@
+{{define "DATA"}}
+<article>
+  <section>
+    {{if .ErrorMessage}}
+    <div class="errormessage">
+      {{.ErrorMessage}}
+    </div>
+    {{end}}
+    <form method="POST" class="login">
+      <label for="email" >Email:</label>
+      <input type="text" id="email" name="email" class="form_input" value="{{.Email}}" />
+      <label for="password" >Password:</label>
+      <input type="password" id="password" name="password" class="form_input" />
+      <input type="submit" />
+    </form>
+    <br/>
+    <a href="/createuser/">Зарегистрировать пользователя</a> | <a href="/forgotpassword/">Восстановить пароль</a>
+    <br/>
+  </section>
+</article>
+{{end}}

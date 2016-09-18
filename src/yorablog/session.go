@@ -5,16 +5,18 @@ import (
 	"math/rand"
 	"net/http"
 	"time"
+	"yoradb"
 )
 
 // SessionHandler is the handler for session creation
 type SessionHandler struct {
 	parent http.Handler
+	db     *yoradb.DB
 }
 
 // SessionRequired initialize session handler
-func SessionRequired(parent http.Handler) SessionHandler {
-	return SessionHandler{parent}
+func SessionRequired(db *yoradb.DB, parent http.Handler) SessionHandler {
+	return SessionHandler{parent: parent, db: db}
 }
 
 func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +29,7 @@ func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		sessionID = CreateSessionID()
 	} else {
 		sessionID = cookie.Value
-		if !DBSessionValid(sessionID) {
+		if !h.db.DBSessionValid(sessionID) {
 			needSetCookie = true
 			sessionID = CreateSessionID()
 		}
@@ -35,7 +37,7 @@ func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if needSetCookie {
 		expires := time.Now().Add(30 * 24 * time.Hour)
-		_ = DBInsertNewSession(sessionID, expires)
+		_ = h.db.DBInsertNewSession(sessionID, expires)
 
 		cookie = &http.Cookie{}
 		cookie.Name = "SessionID"

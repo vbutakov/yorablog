@@ -1,0 +1,22 @@
+{{define "DATA"}}
+<article>
+  <section>
+    {{if .ErrorMessage}}
+    <div class="errormessage">
+      {{.ErrorMessage}}
+    </div>
+    {{end}}
+    <form action="/createuser/" method="POST" class="login">
+      <label for="name" >Имя:</label>
+      <input type="text" id="name" name="name" value="{{.Name}}" />
+      <label for="email" >Email:</label>
+      <input type="text" id="email" name="email" value="{{.Email}}" />
+      <label for="password" >Пароль:</label>
+      <input type="password" id="password" name="password" />
+      <label for="password_confirm" >Подтверждение:</label>
+      <input type="password" id="password_confirm" name="password_confirm" />
+      <input type="submit" value="Создать">
+    </form>
+  </section>
+</article>
+{{end}}

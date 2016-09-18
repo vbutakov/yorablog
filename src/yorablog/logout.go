@@ -3,10 +3,17 @@ package main
 import (
 	"log"
 	"net/http"
+	"yoradb"
 )
 
 // LogoutPageHandler - handler for logout pages
 type LogoutPageHandler struct {
+	db *yoradb.DB
+}
+
+// InitCreatePageHandler initialize CreatePageHandler struct
+func InitLogoutPageHandler(db *yoradb.DB) *LogoutPageHandler {
+	return &LogoutPageHandler{db: db}
 }
 
 func (h LogoutPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -17,7 +24,7 @@ func (h LogoutPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = DBLogoutUserFromSession(cookie.Value)
+	err = h.db.DBLogoutUserFromSession(cookie.Value)
 	if err != nil {
 		log.Printf("Error during logout: %v\n", err)
 	}

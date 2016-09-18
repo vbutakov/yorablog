@@ -7,34 +7,41 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"yoradb"
 	"yotemplate"
 )
 
 // EditPage is a struct for data on the edit page
 type EditPage struct {
-	Post     *Post
-	UserName string
+	Post         *yoradb.Post
+	UserName     string
+	ErrorMessage string
 }
 
 // EditPageHandler is a handler for edit page processing
 type EditPageHandler struct {
-	Template *yotemplate.YoTemplate
+	template *yotemplate.Template
+	db       *yoradb.DB
 }
 
 // InitEditPageHandler initialize EditPageHandler struct
-func InitEditPageHandler(templatesPath string) *EditPageHandler {
-	editTemplatePath := filepath.Join(templatesPath, "edit.html")
-	editTemplate, err := yotemplate.InitYoTemplate(editTemplatePath)
+func InitEditPageHandler(db *yoradb.DB, templatesPath string) *EditPageHandler {
+
+	pathes := make([]string, 2)
+	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
+	pathes[1] = filepath.Join(templatesPath, "edit.gohtml")
+
+	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {
 		log.Panic(err)
 	}
 	log.Println("Edit page template is initialized.")
 
-	return &EditPageHandler{Template: editTemplate}
+	return &EditPageHandler{template: templ, db: db}
 }
 
 // EditPageHandle - handler for index page
-func (eph EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res := EditURLPattern.FindStringSubmatch(r.URL.Path)
 	if res == nil {
@@ -48,28 +55,29 @@ func (eph EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ep := &EditPage{}
+
+	cookie, err := r.Cookie("SessionID")
+	if err != nil {
+		log.Printf("Error during cookie read on index page: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	sessionID := cookie.Value
+	user, err := h.db.DBGetUserBySessionID(sessionID)
+	if err == nil {
+		ep.UserName = user.Name
+	}
+
+	if !user.EditPostPermit {
+		w.WriteHeader(http.StatusForbidden)
+		ErrorTemplate.Execute(w, "Недостаточно прав для редактирования статьи")
+		return
+	}
+
 	if r.Method == "GET" {
-		ep := &EditPage{}
 
-		cookie, err := r.Cookie("SessionID")
-		if err != nil {
-			log.Printf("Error during cookie read on index page: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		sessionID := cookie.Value
-		user, err := DBGetUserBySessionID(sessionID)
-		if err == nil {
-			ep.UserName = user.Name
-		}
-
-		if !user.EditPostPermit {
-			w.WriteHeader(http.StatusForbidden)
-			ErrorTemplate.Execute(w, "Недостаточно прав для редактирования статьи")
-			return
-		}
-
-		ep.Post, err = DBGetPostByID(postID)
+		ep.Post, err = h.db.DBGetPostByID(postID)
 		if err != nil {
 			log.Printf("Error during db query for edit page: %v\n", err)
 			http.NotFound(w, r)
@@ -78,7 +86,7 @@ func (eph EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusOK)
 
-		eph.Template.Execute(w, ep)
+		h.template.Execute(w, ep)
 	} else if r.Method == "POST" {
 		err = r.ParseForm()
 		if err != nil {
@@ -86,7 +94,7 @@ func (eph EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		post := &Post{ID: postID}
+		post := &yoradb.Post{ID: postID}
 
 		post.Title = template.HTML(r.FormValue("title"))
 		post.Description = template.HTML(r.FormValue("description"))
@@ -94,10 +102,16 @@ func (eph EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		post.Annotation = template.HTML(r.FormValue("annotation"))
 		post.Text = template.HTML(r.FormValue("posttext"))
 
-		err = DBUpdatePost(post)
+		err = h.db.DBUpdatePost(post)
 		if err != nil {
+			ep.Post = post
+			ep.ErrorMessage = err.Error()
+
 			log.Printf("Error during update post in DB: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+
+			w.WriteHeader(http.StatusOK)
+			h.template.Execute(w, ep)
+
 			return
 		}
 
