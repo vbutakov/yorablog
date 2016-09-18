@@ -6,39 +6,46 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"yoradb"
 	"yotemplate"
 )
 
 // PostPage is a struct for data on the post page
 type PostPage struct {
-	Post          *Post
+	Post          *yoradb.Post
 	OGURL         string
 	OGType        string
 	OGTitle       template.HTML
 	OGDescription template.HTML
 	OGImage       string
 	UserName      string
+	ErrorMessage  string
 }
 
 // PostPageHandler is a handler for post page processing
 type PostPageHandler struct {
-	Template *yotemplate.YoTemplate
+	template *yotemplate.Template
+	db       *yoradb.DB
 }
 
 // InitPostPageHandler initialize PostPageHandler struct
-func InitPostPageHandler(templatesPath string) *PostPageHandler {
-	postTemplatePath := filepath.Join(templatesPath, "post.html")
-	postTemplate, err := yotemplate.InitYoTemplate(postTemplatePath)
+func InitPostPageHandler(db *yoradb.DB, templatesPath string) *PostPageHandler {
+
+	pathes := make([]string, 2)
+	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
+	pathes[1] = filepath.Join(templatesPath, "post.gohtml")
+
+	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {
 		log.Panic(err)
 	}
 	log.Println("Post page template is initialized.")
 
-	return &PostPageHandler{Template: postTemplate}
+	return &PostPageHandler{template: templ, db: db}
 }
 
 // PostPageHandler - handler for post page
-func (pph PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res := PostURLPattern.FindStringSubmatch(r.URL.Path)
 	if res == nil {
@@ -55,7 +62,7 @@ func (pph PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sessionID := cookie.Value
-	user, err := DBGetUserBySessionID(sessionID)
+	user, err := h.db.DBGetUserBySessionID(sessionID)
 	if err == nil {
 		pp.UserName = user.Name
 	}
@@ -66,7 +73,7 @@ func (pph PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pp.Post, err = DBGetPostByID(postID)
+	pp.Post, err = h.db.DBGetPostByID(postID)
 	if err != nil {
 		log.Printf("Error during db query for post page: %v\n", err)
 		http.NotFound(w, r)
@@ -81,5 +88,5 @@ func (pph PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 
-	pph.Template.Execute(w, pp)
+	h.template.Execute(w, pp)
 }

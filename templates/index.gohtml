@@ -1,0 +1,32 @@
+{{define "DATA"}}
+
+<article>
+
+  <nav class="menu">
+    <ul>
+      <li><a class="round-button create-button" href="/create/"><i class="material-icons">add</i></a></li>
+    </ul>
+  </nav>
+
+  {{if .ErrorMessage}}
+  <div class="errormessage">
+    {{.ErrorMessage}}
+  </div>
+  {{end}}
+  {{range .Posts}}
+  <section class="post-card">
+    <h2>{{.Title}}</h2>
+    <p class="datetime">{{.Author}} {{.CreatedAt}}</p>
+    <p>{{.Annotation}}</p>
+    <div class="simple-button"><a href="/post/{{.ID}}">ПОДРОБНЕЕ</a></div>
+  </section>
+  {{end}}
+  <nav class="pager">
+    <ul>
+      <li class="simple-button"><a href="{{.PrevPageURL}}"><< Предыдущие</a></li>
+      <li class="simple-button"><a href="{{.NextPageURL}}">Следующие >></a></li>
+    </ul>
+  </nav>
+</article>
+
+{{end}}

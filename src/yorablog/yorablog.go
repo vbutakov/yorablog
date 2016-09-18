@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"yoradb"
 )
 
 func main() {
@@ -14,40 +15,40 @@ func main() {
 
 	InitURLPatterns() // panic if regexps not compile
 
-	err = InitDB()
+	db, err := yoradb.InitDB(BaseDSN)
 	if err != nil {
 		log.Panicln(err)
 	}
-	defer DBConnection.Close()
+	defer db.Conn.Close()
 
-	LoginHandler := InitLoginPageHandler(BaseTemplatesPath)
-	LogoutHandler := &LogoutPageHandler{}
-	CreateUserHandler := InitCreateUserPageHandler(BaseTemplatesPath)
-	ForgotPasswordHandler := InitForgotPasswordPageHandler(BaseTemplatesPath)
-	RestorePasswordHandler := InitRestorePasswordPageHandler(BaseTemplatesPath)
+	LoginHandler := InitLoginPageHandler(db, BaseTemplatesPath)
+	LogoutHandler := InitLogoutPageHandler(db)
+	CreateUserHandler := InitCreateUserPageHandler(db, BaseTemplatesPath)
+	ForgotPasswordHandler := InitForgotPasswordPageHandler(db, BaseTemplatesPath)
+	RestorePasswordHandler := InitRestorePasswordPageHandler(db, BaseTemplatesPath)
 
-	IndexHandler := InitIndexPageHandler(BaseTemplatesPath)
-	PostHandler := InitPostPageHandler(BaseTemplatesPath)
-	EditHandler := InitEditPageHandler(BaseTemplatesPath)
-	CreateHandler := InitCreatePageHandler(BaseTemplatesPath)
+	IndexHandler := InitIndexPageHandler(db, BaseTemplatesPath)
+	PostHandler := InitPostPageHandler(db, BaseTemplatesPath)
+	EditHandler := InitEditPageHandler(db, BaseTemplatesPath)
+	CreateHandler := InitCreatePageHandler(db, BaseTemplatesPath)
 
 	ErrorTemplate = InitErrorTemplate(BaseTemplatesPath)
 
-	http.Handle("/login/", SessionRequired(LoginHandler))
-	http.Handle("/logout/", SessionRequired(LogoutHandler))
-	http.Handle("/createuser/", SessionRequired(CreateUserHandler))
-	http.Handle("/forgotpassword/", SessionRequired(ForgotPasswordHandler))
-	http.Handle("/restorepassword/", SessionRequired(RestorePasswordHandler))
+	http.Handle("/login/", SessionRequired(db, LoginHandler))
+	http.Handle("/logout/", SessionRequired(db, LogoutHandler))
+	http.Handle("/createuser/", SessionRequired(db, CreateUserHandler))
+	http.Handle("/forgotpassword/", SessionRequired(db, ForgotPasswordHandler))
+	http.Handle("/restorepassword/", SessionRequired(db, RestorePasswordHandler))
 
 	http.Handle("/static/", http.StripPrefix("/static/",
 		http.FileServer(http.Dir(BaseStaticPath))))
 	http.Handle("/photos/", http.StripPrefix("/photos/",
 		http.FileServer(http.Dir(BasePhotosPath))))
 
-	http.Handle("/", SessionRequired(IndexHandler))
-	http.Handle("/post/", SessionRequired(PostHandler))
-	http.Handle("/edit/", SessionRequired(LoginRequired(EditHandler)))
-	http.Handle("/create/", SessionRequired(LoginRequired(CreateHandler)))
+	http.Handle("/", SessionRequired(db, IndexHandler))
+	http.Handle("/post/", SessionRequired(db, PostHandler))
+	http.Handle("/edit/", SessionRequired(db, LoginRequired(db, EditHandler)))
+	http.Handle("/create/", SessionRequired(db, LoginRequired(db, CreateHandler)))
 
 	log.Printf("Listen on %v.\n", BaseServeAddr)
 
