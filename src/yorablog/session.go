@@ -47,8 +47,9 @@ func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		// have to reload page because it need cookie
 		w.Header().Add("Set-Cookie", cookie.String())
-		http.Redirect(w, r, r.URL.String(), http.StatusSeeOther)
-		return
+		//http.Redirect(w, r, r.URL.String(), http.StatusSeeOther)
+		//return
+		r.AddCookie(cookie)
 	}
 
 	h.parent.ServeHTTP(w, r)
