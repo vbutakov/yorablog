@@ -44,14 +44,15 @@ h1, h2, strong {
 
 header {
   display: block;
-  padding: 2em 2em 0em 2em;
+  padding: 0.7em 2em 0em 2em;
   background-color: #E0E0E0;
   background-image: url("/static/img/header_matras.jpg");
   height: 158px;
+  background-position: center;
 }
 
 header h1 {
-	color: #FFFFFF;
+  height: 3em;
 }
 
 header h1 a {
