@@ -29,9 +29,10 @@ type IndexPageHandler struct {
 // InitIndexPageHandler initialize IndexPageHandler struct
 func InitIndexPageHandler(db *yoradb.DB, templatesPath string) *IndexPageHandler {
 
-	pathes := make([]string, 2)
+	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
 	pathes[1] = filepath.Join(templatesPath, "index.gohtml")
+	pathes[2] = filepath.Join(templatesPath, "empty_og.gohtml")
 
 	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {

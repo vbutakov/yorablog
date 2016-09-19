@@ -31,9 +31,10 @@ type PostPageHandler struct {
 // InitPostPageHandler initialize PostPageHandler struct
 func InitPostPageHandler(db *yoradb.DB, templatesPath string) *PostPageHandler {
 
-	pathes := make([]string, 2)
+	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
 	pathes[1] = filepath.Join(templatesPath, "post.gohtml")
+	pathes[2] = filepath.Join(templatesPath, "post_og.gohtml")
 
 	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {

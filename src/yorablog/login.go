@@ -56,9 +56,10 @@ func (h LoginRequiredHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 // InitLoginPageHandler creates and inits login page handler
 func InitLoginPageHandler(db *yoradb.DB, templatesPath string) *LoginPageHandler {
 
-	pathes := make([]string, 2)
+	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
 	pathes[1] = filepath.Join(templatesPath, "login.gohtml")
+	pathes[2] = filepath.Join(templatesPath, "empty_og.gohtml")
 
 	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {

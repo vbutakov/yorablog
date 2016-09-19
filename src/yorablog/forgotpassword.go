@@ -25,9 +25,10 @@ type ForgotPasswordPageHandler struct {
 // InitForgotPasswordPageHandler initialize ForgotPasswordPageHandler struct
 func InitForgotPasswordPageHandler(db *yoradb.DB, templatesPath string) *ForgotPasswordPageHandler {
 
-	pathes := make([]string, 2)
+	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
 	pathes[1] = filepath.Join(templatesPath, "forgotpassword.gohtml")
+	pathes[2] = filepath.Join(templatesPath, "empty_og.gohtml")
 
 	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {

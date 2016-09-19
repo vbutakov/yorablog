@@ -26,9 +26,10 @@ type CreatePageHandler struct {
 // InitCreatePageHandler initialize CreatePageHandler struct
 func InitCreatePageHandler(db *yoradb.DB, templatesPath string) *CreatePageHandler {
 
-	pathes := make([]string, 2)
+	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
 	pathes[1] = filepath.Join(templatesPath, "create.gohtml")
+	pathes[2] = filepath.Join(templatesPath, "empty_og.gohtml")
 
 	templ, err := yotemplate.InitTemplate(pathes...)
 	if err != nil {
