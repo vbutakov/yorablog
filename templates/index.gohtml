@@ -16,7 +16,7 @@
   {{range .Posts}}
   <section class="post-card">
     <h2>{{.Title}}</h2>
-    <p class="datetime">{{.Author}} {{.CreatedAt}}</p>
+    <p class="datetime">{{.Author}} {{.CreatedAt.Format "2006-01-02"}}</p>
     <p>{{.Annotation}}</p>
     <div class="simple-button"><a href="/post/{{.ID}}">ПОДРОБНЕЕ</a></div>
   </section>
