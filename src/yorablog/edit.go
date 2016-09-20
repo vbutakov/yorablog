@@ -21,11 +21,11 @@ type EditPage struct {
 // EditPageHandler is a handler for edit page processing
 type EditPageHandler struct {
 	template *yotemplate.Template
-	db       *yoradb.DB
+	db       yoradb.DB
 }
 
 // InitEditPageHandler initialize EditPageHandler struct
-func InitEditPageHandler(db *yoradb.DB, templatesPath string) *EditPageHandler {
+func InitEditPageHandler(db yoradb.DB, templatesPath string) *EditPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")

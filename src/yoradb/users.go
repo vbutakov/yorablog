@@ -27,7 +27,7 @@ var (
 )
 
 // DBGetUserBySessionID return user data for session
-func (db *DB) DBGetUserBySessionID(sessionID string) (*User, error) {
+func (db *mysqlDB) DBGetUserBySessionID(sessionID string) (*User, error) {
 	row := db.Conn.QueryRow(
 		`SELECT
 			u.id,
@@ -64,7 +64,7 @@ func (db *DB) DBGetUserBySessionID(sessionID string) (*User, error) {
 }
 
 // DBSessionValid check that session exist and not expire
-func (db *DB) DBSessionValid(sessionID string) bool {
+func (db *mysqlDB) DBSessionValid(sessionID string) bool {
 	var s string
 	row := db.Conn.QueryRow(
 		`SELECT id FROM Sessions WHERE id = ?;`,
@@ -78,7 +78,7 @@ func (db *DB) DBSessionValid(sessionID string) bool {
 }
 
 // DBInsertNewSession inserts new session into db
-func (db *DB) DBInsertNewSession(sessionID string, expires time.Time) error {
+func (db *mysqlDB) DBInsertNewSession(sessionID string, expires time.Time) error {
 	_, err := db.Conn.Exec(
 		`INSERT INTO Sessions
 			(id, Expires)
@@ -88,7 +88,7 @@ func (db *DB) DBInsertNewSession(sessionID string, expires time.Time) error {
 }
 
 // DBUserIsLogedIn checks if user is loged in
-func (db *DB) DBUserIsLogedIn(sessionID string) bool {
+func (db *mysqlDB) DBUserIsLogedIn(sessionID string) bool {
 	var u sql.NullString
 	row := db.Conn.QueryRow(
 		`SELECT UserId FROM Sessions WHERE id = ?;`,
@@ -103,7 +103,7 @@ func (db *DB) DBUserIsLogedIn(sessionID string) bool {
 }
 
 // DBCreateUser add new user to Users table
-func (db *DB) DBCreateUser(name, email, password string) (int, error) {
+func (db *mysqlDB) DBCreateUser(name, email, password string) (int, error) {
 	passwordHash := getPasswordHash(email, password)
 	res, err := db.Conn.Exec(
 		`INSERT INTO Users
@@ -127,7 +127,7 @@ func getPasswordHash(email, password string) string {
 }
 
 // DBUpdateSessionWithUserID link userID with sessionID
-func (db *DB) DBUpdateSessionWithUserID(sessionID string, userID int) error {
+func (db *mysqlDB) DBUpdateSessionWithUserID(sessionID string, userID int) error {
 	_, err := db.Conn.Exec(
 		`UPDATE Sessions
 		SET UserId = ?
@@ -137,7 +137,7 @@ func (db *DB) DBUpdateSessionWithUserID(sessionID string, userID int) error {
 }
 
 // DBLoginUser check user password in db and return userID
-func (db *DB) DBLoginUser(email, password string) (int, error) {
+func (db *mysqlDB) DBLoginUser(email, password string) (int, error) {
 	passwordHash := getPasswordHash(email, password)
 	row := db.Conn.QueryRow(
 		`SELECT id FROM Users WHERE Email = ? AND Password = ?;`,
@@ -155,7 +155,7 @@ func (db *DB) DBLoginUser(email, password string) (int, error) {
 }
 
 // DBLogoutUserFromSession clears userID for session
-func (db *DB) DBLogoutUserFromSession(sessionID string) error {
+func (db *mysqlDB) DBLogoutUserFromSession(sessionID string) error {
 	_, err := db.Conn.Exec(
 		`UPDATE Sessions
 		SET UserId = NULL
@@ -165,7 +165,7 @@ func (db *DB) DBLogoutUserFromSession(sessionID string) error {
 }
 
 // DBEmailExist check if user withspecified email exist in db
-func (db *DB) DBEmailExist(email string) bool {
+func (db *mysqlDB) DBEmailExist(email string) bool {
 	row := db.Conn.QueryRow(
 		`SELECT u.Email FROM Users u WHERE u.Email = ?;`,
 		email)
@@ -182,7 +182,7 @@ func (db *DB) DBEmailExist(email string) bool {
 }
 
 // DBCreateRestorePasswordID create restore token and return it
-func (db *DB) DBCreateRestorePasswordID(email, token string) (string, error) {
+func (db *mysqlDB) DBCreateRestorePasswordID(email, token string) (string, error) {
 	//token := CreateSessionID()
 	_, err := db.Conn.Exec(
 		`INSERT INTO RestorePasswords (id, Email)
@@ -192,7 +192,7 @@ func (db *DB) DBCreateRestorePasswordID(email, token string) (string, error) {
 }
 
 // DBGetEmailByRestoreToken return email for specified restore password token
-func (db *DB) DBGetEmailByRestoreToken(token string) (string, error) {
+func (db *mysqlDB) DBGetEmailByRestoreToken(token string) (string, error) {
 	res := db.Conn.QueryRow(
 		`SELECT Email FROM RestorePasswords WHERE id = ?;`,
 		token)
@@ -204,7 +204,7 @@ func (db *DB) DBGetEmailByRestoreToken(token string) (string, error) {
 }
 
 // DBUpdatePasswordByRestoreToken update user password by specified restore token
-func (db *DB) DBUpdatePasswordByRestoreToken(token, email, password string) error {
+func (db *mysqlDB) DBUpdatePasswordByRestoreToken(token, email, password string) error {
 	tx, err := db.Conn.Begin()
 	if err != nil {
 		return err

@@ -20,11 +20,11 @@ type CreatePage struct {
 // CreatePageHandler is a handler for edit create processing
 type CreatePageHandler struct {
 	template *yotemplate.Template
-	db       *yoradb.DB
+	db       yoradb.DB
 }
 
 // InitCreatePageHandler initialize CreatePageHandler struct
-func InitCreatePageHandler(db *yoradb.DB, templatesPath string) *CreatePageHandler {
+func InitCreatePageHandler(db yoradb.DB, templatesPath string) *CreatePageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")

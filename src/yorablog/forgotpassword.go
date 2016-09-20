@@ -19,11 +19,11 @@ type ForgotPasswordPage struct {
 // ForgotPasswordPageHandler is a handler for page processing
 type ForgotPasswordPageHandler struct {
 	template *yotemplate.Template
-	db       *yoradb.DB
+	db       yoradb.DB
 }
 
 // InitForgotPasswordPageHandler initialize ForgotPasswordPageHandler struct
-func InitForgotPasswordPageHandler(db *yoradb.DB, templatesPath string) *ForgotPasswordPageHandler {
+func InitForgotPasswordPageHandler(db yoradb.DB, templatesPath string) *ForgotPasswordPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")

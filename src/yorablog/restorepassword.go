@@ -22,11 +22,11 @@ type RestorePasswordPage struct {
 // RestorePasswordPageHandler is a handler for page processing
 type RestorePasswordPageHandler struct {
 	template *yotemplate.Template
-	db       *yoradb.DB
+	db       yoradb.DB
 }
 
 // InitRestorePasswordPageHandler initialize RestorePasswordPageHandler struct
-func InitRestorePasswordPageHandler(db *yoradb.DB, templatesPath string) *RestorePasswordPageHandler {
+func InitRestorePasswordPageHandler(db yoradb.DB, templatesPath string) *RestorePasswordPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")

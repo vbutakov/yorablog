@@ -21,17 +21,17 @@ type LoginPage struct {
 // LoginPageHandler - handler for login pages
 type LoginPageHandler struct {
 	template *yotemplate.Template
-	db       *yoradb.DB
+	db       yoradb.DB
 }
 
 // LoginRequiredHandler structure for checking if user login required
 type LoginRequiredHandler struct {
 	parent http.Handler
-	db     *yoradb.DB
+	db     yoradb.DB
 }
 
 // LoginRequired initialize LoginRequiredHandler
-func LoginRequired(db *yoradb.DB, parent http.Handler) LoginRequiredHandler {
+func LoginRequired(db yoradb.DB, parent http.Handler) LoginRequiredHandler {
 	return LoginRequiredHandler{parent: parent, db: db}
 }
 
@@ -54,7 +54,7 @@ func (h LoginRequiredHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 }
 
 // InitLoginPageHandler creates and inits login page handler
-func InitLoginPageHandler(db *yoradb.DB, templatesPath string) *LoginPageHandler {
+func InitLoginPageHandler(db yoradb.DB, templatesPath string) *LoginPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
