@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
+	"strings"
 	"testing"
 	"time"
 	"yoradb"
@@ -14,7 +16,7 @@ type tDB struct {
 }
 
 func (db *tDB) DBInsertPost(post *yoradb.Post, userID int) (int, error) {
-	return 0, nil
+	return 10, nil
 }
 
 func (db *tDB) DBGetPostByID(id int) (*yoradb.Post, error) {
@@ -46,6 +48,8 @@ func (db *tDB) DBGetUserBySessionID(sessionID string) (*yoradb.User, error) {
 	user.ID = 10
 	user.Name = "Begemotina"
 	user.Email = "vozhdyara@gmail.com"
+	user.CreatePostPermit = true
+	user.EditPostPermit = true
 
 	return user, nil
 }
@@ -100,7 +104,6 @@ func (db *tDB) Close() error {
 
 func TestPostPageServeHTTP(t *testing.T) {
 	db := &tDB{}
-	InitURLPatterns()
 	h := InitPostPageHandler(db, "/home/valya/myprogs/yorablog/templates")
 	req := httptest.NewRequest("GET", "http://localhost/post/3", nil)
 	w := httptest.NewRecorder()
@@ -113,15 +116,61 @@ func TestPostPageServeHTTP(t *testing.T) {
 
 	h.ServeHTTP(w, req)
 
-	if w.Code != 200 {
+	if w.Code != http.StatusOK {
 		t.Errorf("Wrong error code: %v\n", w.Code)
 	}
 
 	if !bytes.Contains(w.Body.Bytes(), []byte("</html>")) {
 		t.Errorf("Page is not complete")
 	}
+
+	if !bytes.Contains(w.Body.Bytes(), []byte("Тестовый заголовок")) {
+		t.Errorf("Заголовок не выведен")
+	}
+
+	if !bytes.Contains(w.Body.Bytes(), []byte("Тестовый текст")) {
+		t.Errorf("Текст не выведен")
+	}
+
+	if !bytes.Contains(w.Body.Bytes(), []byte("Тестовый автор")) {
+		t.Errorf("Автор не выведен")
+	}
+}
+
+func TestCreatePageServeHTTP(t *testing.T) {
+	db := &tDB{}
+	h := InitCreatePageHandler(db, "/home/valya/myprogs/yorablog/templates")
+
+	form := &url.Values{}
+	form.Add("title", "Тестовый заголовок")
+	form.Add("description", "Тестовое описание")
+	form.Add("imageurl", "Тестовая картинка")
+	form.Add("annotation", "Тестовая аннотация")
+	form.Add("posttext", "Тестовый текст")
+
+	body := strings.NewReader(form.Encode())
+
+	req := httptest.NewRequest("POST", "http://localhost/create", body)
+	w := httptest.NewRecorder()
+
+	c := &http.Cookie{}
+	c.Name = "SessionID"
+	c.Value = "1234567890"
+
+	req.Header.Set("Cookie", c.String())
+
+	h.ServeHTTP(w, req)
+
+	if w.Code != http.StatusSeeOther {
+		t.Errorf("Wrong error code: %v\n", w.Code)
+	}
+	loc := w.Header().Get("Location")
+	if !strings.Contains(loc, "/post/10") {
+		t.Errorf("Wrong redirect: %v\n", loc)
+	}
 }
 
 func TestMain(m *testing.M) {
+	InitURLPatterns()
 	os.Exit(m.Run())
 }
