@@ -10,7 +10,8 @@ import (
 
 func TestEditPageHavePermitServeHTTP(t *testing.T) {
 	db := &tDB{}
-	h := InitEditPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	temp := InitEditPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	h := SessionRequired(db, LoginRequired(db, temp))
 
 	form := &url.Values{}
 	form.Add("title", "Тестовый заголовок")
@@ -45,7 +46,8 @@ func TestEditPageHavePermitServeHTTP(t *testing.T) {
 
 func TestEditPageNotHavePermitServeHTTP(t *testing.T) {
 	db := &tDB{}
-	h := InitEditPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	temp := InitEditPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	h := SessionRequired(db, LoginRequired(db, temp))
 
 	form := &url.Values{}
 	form.Add("title", "Тестовый заголовок")

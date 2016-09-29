@@ -21,11 +21,11 @@ type EditPage struct {
 // EditPageHandler is a handler for edit page processing
 type EditPageHandler struct {
 	template *yotemplate.Template
-	db       yoradb.DB
+	db       yoradb.PostRepository
 }
 
 // InitEditPageHandler initialize EditPageHandler struct
-func InitEditPageHandler(db yoradb.DB, templatesPath string) *EditPageHandler {
+func InitEditPageHandler(db yoradb.PostRepository, templatesPath string) *EditPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -58,15 +58,8 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ep := &EditPage{}
 
-	cookie, err := r.Cookie("SessionID")
-	if err != nil {
-		log.Printf("Error during cookie read on index page: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	sessionID := cookie.Value
-	user, err := h.db.DBGetUserBySessionID(sessionID)
-	if err == nil {
+	user, ok := r.Context().Value("User").(*yoradb.User)
+	if ok {
 		ep.UserName = user.Name
 	}
 
@@ -76,7 +69,7 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method == "GET" {
+	if r.Method == http.MethodGet {
 
 		ep.Post, err = h.db.DBGetPostByID(postID)
 		if err != nil {
@@ -88,7 +81,7 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
 		h.template.Execute(w, ep)
-	} else if r.Method == "POST" {
+	} else if r.Method == http.MethodPost {
 		err = r.ParseForm()
 		if err != nil {
 			log.Printf("Error during edit form parse: %v\n", err)

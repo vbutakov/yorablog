@@ -9,7 +9,8 @@ import (
 
 func TestIndexServeHTTP(t *testing.T) {
 	db := &tDB{}
-	h := InitIndexPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	temp := InitIndexPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	h := SessionRequired(db, temp)
 	req := httptest.NewRequest(http.MethodGet, "http://localhost/", nil)
 	w := httptest.NewRecorder()
 

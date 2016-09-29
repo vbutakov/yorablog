@@ -21,16 +21,21 @@ func main() {
 	}
 	defer db.Close()
 
+	pr, ok := db.(yoradb.PostRepository)
+	if !ok {
+		log.Panicln("Error ehile converting db to PostRepository")
+	}
+
 	LoginHandler := InitLoginPageHandler(db, BaseTemplatesPath)
 	LogoutHandler := InitLogoutPageHandler(db)
 	CreateUserHandler := InitCreateUserPageHandler(db, BaseTemplatesPath)
 	ForgotPasswordHandler := InitForgotPasswordPageHandler(db, BaseTemplatesPath)
 	RestorePasswordHandler := InitRestorePasswordPageHandler(db, BaseTemplatesPath)
 
-	IndexHandler := InitIndexPageHandler(db, BaseTemplatesPath)
-	PostHandler := InitPostPageHandler(db, BaseTemplatesPath)
-	EditHandler := InitEditPageHandler(db, BaseTemplatesPath)
-	CreateHandler := InitCreatePageHandler(db, BaseTemplatesPath)
+	IndexHandler := InitIndexPageHandler(pr, BaseTemplatesPath)
+	PostHandler := InitPostPageHandler(pr, BaseTemplatesPath)
+	EditHandler := InitEditPageHandler(pr, BaseTemplatesPath)
+	CreateHandler := InitCreatePageHandler(pr, BaseTemplatesPath)
 
 	ErrorTemplate = InitErrorTemplate(BaseTemplatesPath)
 

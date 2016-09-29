@@ -23,11 +23,11 @@ type IndexPage struct {
 // IndexPageHandler is a handler for page processing
 type IndexPageHandler struct {
 	template *yotemplate.Template
-	db       yoradb.DB
+	db       yoradb.PostRepository
 }
 
 // InitIndexPageHandler initialize IndexPageHandler struct
-func InitIndexPageHandler(db yoradb.DB, templatesPath string) *IndexPageHandler {
+func InitIndexPageHandler(db yoradb.PostRepository, templatesPath string) *IndexPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -58,15 +58,8 @@ func (h IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ip := &IndexPage{}
 
-	cookie, err := r.Cookie("SessionID")
-	if err != nil {
-		log.Printf("Error during cookie read from on index page: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	sessionID := cookie.Value
-	user, err := h.db.DBGetUserBySessionID(sessionID)
-	if err == nil {
+	user, ok := r.Context().Value("User").(*yoradb.User)
+	if ok {
 		ip.UserName = user.Name
 	}
 
