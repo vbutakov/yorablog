@@ -25,11 +25,11 @@ type PostPage struct {
 // PostPageHandler is a handler for post page processing
 type PostPageHandler struct {
 	template *yotemplate.Template
-	db       *yoradb.DB
+	db       yoradb.DB
 }
 
 // InitPostPageHandler initialize PostPageHandler struct
-func InitPostPageHandler(db *yoradb.DB, templatesPath string) *PostPageHandler {
+func InitPostPageHandler(db yoradb.DB, templatesPath string) *PostPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")

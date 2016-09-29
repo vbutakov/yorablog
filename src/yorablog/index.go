@@ -23,11 +23,11 @@ type IndexPage struct {
 // IndexPageHandler is a handler for page processing
 type IndexPageHandler struct {
 	template *yotemplate.Template
-	db       *yoradb.DB
+	db       yoradb.DB
 }
 
 // InitIndexPageHandler initialize IndexPageHandler struct
-func InitIndexPageHandler(db *yoradb.DB, templatesPath string) *IndexPageHandler {
+func InitIndexPageHandler(db yoradb.DB, templatesPath string) *IndexPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")

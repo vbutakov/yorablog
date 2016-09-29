@@ -8,11 +8,11 @@ import (
 
 // LogoutPageHandler - handler for logout pages
 type LogoutPageHandler struct {
-	db *yoradb.DB
+	db yoradb.DB
 }
 
-// InitCreatePageHandler initialize CreatePageHandler struct
-func InitLogoutPageHandler(db *yoradb.DB) *LogoutPageHandler {
+// InitLogoutPageHandler initialize CreatePageHandler struct
+func InitLogoutPageHandler(db yoradb.DB) *LogoutPageHandler {
 	return &LogoutPageHandler{db: db}
 }
 

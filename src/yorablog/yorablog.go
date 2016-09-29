@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-	defer db.Conn.Close()
+	defer db.Close()
 
 	LoginHandler := InitLoginPageHandler(db, BaseTemplatesPath)
 	LogoutHandler := InitLogoutPageHandler(db)

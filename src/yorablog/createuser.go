@@ -21,11 +21,11 @@ type CreateUserPage struct {
 // CreateUserPageHandler - handler for create user pages
 type CreateUserPageHandler struct {
 	template *yotemplate.Template
-	db       *yoradb.DB
+	db       yoradb.DB
 }
 
 // InitCreateUserPageHandler creates and inits login page handler
-func InitCreateUserPageHandler(db *yoradb.DB, templatesPath string) *CreateUserPageHandler {
+func InitCreateUserPageHandler(db yoradb.DB, templatesPath string) *CreateUserPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")

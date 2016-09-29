@@ -21,17 +21,17 @@ type LoginPage struct {
 // LoginPageHandler - handler for login pages
 type LoginPageHandler struct {
 	template *yotemplate.Template
-	db       *yoradb.DB
+	db       yoradb.DB
 }
 
 // LoginRequiredHandler structure for checking if user login required
 type LoginRequiredHandler struct {
 	parent http.Handler
-	db     *yoradb.DB
+	db     yoradb.DB
 }
 
 // LoginRequired initialize LoginRequiredHandler
-func LoginRequired(db *yoradb.DB, parent http.Handler) LoginRequiredHandler {
+func LoginRequired(db yoradb.DB, parent http.Handler) LoginRequiredHandler {
 	return LoginRequiredHandler{parent: parent, db: db}
 }
 
@@ -54,7 +54,7 @@ func (h LoginRequiredHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 }
 
 // InitLoginPageHandler creates and inits login page handler
-func InitLoginPageHandler(db *yoradb.DB, templatesPath string) *LoginPageHandler {
+func InitLoginPageHandler(db yoradb.DB, templatesPath string) *LoginPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -73,7 +73,7 @@ func InitLoginPageHandler(db *yoradb.DB, templatesPath string) *LoginPageHandler
 // LoginHandle - handler for login page
 func (h LoginPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		lp := &LoginPage{URLQuery: r.URL.RawQuery}
 		lp.Email = r.FormValue("email")
 		lp.Password = r.FormValue("password")
@@ -114,7 +114,7 @@ func (h LoginPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 
-	} else if r.Method == "GET" {
+	} else if r.Method == http.MethodGet {
 		lp := &LoginPage{URLQuery: r.URL.RawQuery}
 		lp.Email = r.FormValue("email")
 
