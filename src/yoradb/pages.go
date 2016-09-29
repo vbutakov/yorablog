@@ -20,7 +20,7 @@ type Post struct {
 }
 
 // DBInsertPost create new post in db
-func (db *mysqlDB) DBInsertPost(post *Post, userID int) (int, error) {
+func (db *mysqlDB) DBCreatePost(post *Post, userID int) (int, error) {
 	res, err := db.Conn.Exec(
 		`INSERT INTO Posts
 			(Title, Description, ImageURL, Annotation, PostText, Author)

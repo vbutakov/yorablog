@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"time"
 
+	// MySQL driver
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// DB interface
 type DB interface {
-	DBInsertPost(post *Post, userID int) (int, error)
+	DBCreatePost(post *Post, userID int) (int, error)
 	DBGetPostByID(id int) (*Post, error)
 	DBUpdatePost(post *Post) error
 	DBGetPosts(num, offset int) ([]Post, error)
@@ -16,7 +18,6 @@ type DB interface {
 	DBGetUserBySessionID(sessionID string) (*User, error)
 	DBSessionValid(sessionID string) bool
 	DBInsertNewSession(sessionID string, expires time.Time) error
-	DBUserIsLogedIn(sessionID string) bool
 	DBCreateUser(name, email, password string) (int, error)
 	DBUpdateSessionWithUserID(sessionID string, userID int) error
 	DBLoginUser(email, password string) (int, error)

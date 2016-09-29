@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"net/url"
@@ -43,12 +44,16 @@ func (h LoginRequiredHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if !h.db.DBUserIsLogedIn(cookie.Value) {
+	user, err := h.db.DBGetUserBySessionID(cookie.Value)
+	if err != nil {
 		val := make(url.Values)
 		val.Add("return", r.URL.String())
 		redirectURL := "/login/?" + val.Encode()
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	} else {
+		uctx := context.WithValue(r.Context(), "User", user)
+		r = r.WithContext(uctx)
+
 		h.parent.ServeHTTP(w, r)
 	}
 }

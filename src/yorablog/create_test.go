@@ -10,7 +10,8 @@ import (
 
 func TestCreatePageHavePermitServeHTTP(t *testing.T) {
 	db := &tDB{}
-	h := InitCreatePageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	temp := InitCreatePageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	h := SessionRequired(db, LoginRequired(db, temp))
 
 	form := &url.Values{}
 	form.Add("title", "Тестовый заголовок")
@@ -44,7 +45,8 @@ func TestCreatePageHavePermitServeHTTP(t *testing.T) {
 
 func TestCreatePageNotHavePermitServeHTTP(t *testing.T) {
 	db := &tDB{}
-	h := InitCreatePageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	temp := InitCreatePageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	h := SessionRequired(db, LoginRequired(db, temp))
 
 	form := &url.Values{}
 	form.Add("title", "Тестовый заголовок")

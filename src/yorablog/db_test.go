@@ -9,7 +9,7 @@ import (
 type tDB struct {
 }
 
-func (db *tDB) DBInsertPost(post *yoradb.Post, userID int) (int, error) {
+func (db *tDB) DBCreatePost(post *yoradb.Post, userID int) (int, error) {
 	return 10, nil
 }
 
@@ -52,10 +52,6 @@ func (db *tDB) DBSessionValid(sessionID string) bool {
 
 func (db *tDB) DBInsertNewSession(sessionID string, expires time.Time) error {
 	return nil
-}
-
-func (db *tDB) DBUserIsLogedIn(sessionID string) bool {
-	return true
 }
 
 func (db *tDB) DBCreateUser(name, email, password string) (int, error) {

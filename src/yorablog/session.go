@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -32,6 +33,12 @@ func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if !h.db.DBSessionValid(sessionID) {
 			needSetCookie = true
 			sessionID = CreateSessionID()
+		} else {
+			user, errUser := h.db.DBGetUserBySessionID(sessionID)
+			if errUser == nil {
+				uctx := context.WithValue(r.Context(), "User", user)
+				r = r.WithContext(uctx)
+			}
 		}
 	}
 
@@ -47,10 +54,11 @@ func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		// have to reload page because it need cookie
 		w.Header().Add("Set-Cookie", cookie.String())
-		//http.Redirect(w, r, r.URL.String(), http.StatusSeeOther)
-		//return
-		r.AddCookie(cookie)
 	}
+
+	// set sessionID into context
+	ctx := context.WithValue(r.Context(), "SessionID", sessionID)
+	r = r.WithContext(ctx)
 
 	h.parent.ServeHTTP(w, r)
 }

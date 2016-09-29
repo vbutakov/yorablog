@@ -45,15 +45,8 @@ func (h CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cp := &CreatePage{Post: &yoradb.Post{}}
 
-	cookie, err := r.Cookie("SessionID")
-	if err != nil {
-		log.Printf("Error during cookie read on post page: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	sessionID := cookie.Value
-	user, err := h.db.DBGetUserBySessionID(sessionID)
-	if err == nil {
+	user, ok := r.Context().Value("User").(*yoradb.User)
+	if ok {
 		cp.UserName = user.Name
 	}
 
@@ -86,7 +79,7 @@ func (h CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		post.Text = template.HTML(r.FormValue("posttext"))
 
 		var postID int
-		postID, err = h.db.DBInsertPost(post, user.ID)
+		postID, err = h.db.DBCreatePost(post, user.ID)
 		if err != nil {
 			cp.Post = post
 			cp.ErrorMessage = err.Error()

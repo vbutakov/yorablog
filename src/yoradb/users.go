@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 )
 
@@ -85,21 +84,6 @@ func (db *mysqlDB) DBInsertNewSession(sessionID string, expires time.Time) error
 		VALUES (?, ?);`,
 		sessionID, expires)
 	return err
-}
-
-// DBUserIsLogedIn checks if user is loged in
-func (db *mysqlDB) DBUserIsLogedIn(sessionID string) bool {
-	var u sql.NullString
-	row := db.Conn.QueryRow(
-		`SELECT UserId FROM Sessions WHERE id = ?;`,
-		sessionID)
-	err := row.Scan(&u)
-	if err != nil {
-		log.Printf("Error in DBUserIsLogedIn: %v\n", err)
-		return false
-	}
-
-	return u.Valid
 }
 
 // DBCreateUser add new user to Users table
