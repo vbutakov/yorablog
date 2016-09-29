@@ -66,8 +66,8 @@ func (h RestorePasswordPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 		rp.Email = email
 	}
 
-	if r.Method == "GET" {
-	} else if r.Method == "POST" {
+	if r.Method == http.MethodGet {
+	} else if r.Method == http.MethodPost {
 		password := r.FormValue("password")
 		passwordConfirm := r.FormValue("passwordconfirm")
 

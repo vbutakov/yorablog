@@ -5,6 +5,7 @@ import (
 	"net/smtp"
 )
 
+// SendEmailForPasswordRestore create and send to user email with password restore token
 func SendEmailForPasswordRestore(email, id string) error {
 
 	headers := fmt.Sprintf("From: %v\r\nTo: %v\r\nSubject: Восстановления пароля\r\nContent-Type: text/html; charset='UTF-8'\r\n\r\n", SMTPFrom, email)
@@ -15,11 +16,11 @@ func SendEmailForPasswordRestore(email, id string) error {
 </header>
 <body>
 Здравствуйте!<br/><br/>
-Для восстановления пароля перейдите по ссылке:<a href='http://yorkina.ru/restorepassword/?token=%v'>http://yorkina.ru/restorepassword/?token=%v</a> 
+Для восстановления пароля перейдите по ссылке:<a href='http://yorkina.ru/restorepassword/?token=%v'>http://yorkina.ru/restorepassword/?token=%v</a>
 <br/>
 <br/>
 С уважением,<br/>
-webmaster@yorkina.ru  
+webmaster@yorkina.ru
 </body>
 </html>`, id, id)
 

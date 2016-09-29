@@ -10,7 +10,7 @@ import (
 func TestForgotPasswordServeHTTP(t *testing.T) {
 	db := &tDB{}
 	h := InitForgotPasswordPageHandler(db, "/home/valya/myprogs/yorablog/templates")
-	req := httptest.NewRequest("GET", "http://localhost/forgotpassword/", nil)
+	req := httptest.NewRequest(http.MethodGet, "http://localhost/forgotpassword/", nil)
 	w := httptest.NewRecorder()
 
 	c := &http.Cookie{}

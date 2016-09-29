@@ -63,13 +63,13 @@ func (h CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method == "GET" {
+	if r.Method == http.MethodGet {
 
 		w.WriteHeader(http.StatusOK)
 
 		h.template.Execute(w, cp)
 
-	} else if r.Method == "POST" {
+	} else if r.Method == http.MethodPost {
 
 		err := r.ParseForm()
 		if err != nil {

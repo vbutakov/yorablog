@@ -21,12 +21,16 @@ var (
 	// BaseDSN is the dsn for db connect
 	BaseDSN string
 
-	//SMTP params
+	// SMTPServer server name
 	SMTPServer string
-	SMTPPort   string
-	SMTPUser   string
-	SMTPPass   string
-	SMTPFrom   string
+	// SMTPPort server port
+	SMTPPort string
+	// SMTPUser - smtp user
+	SMTPUser string
+	// SMTPPass - smtp password
+	SMTPPass string
+	// SMTPFrom - email from address
+	SMTPFrom string
 )
 
 // InitEnv initialize all global params from env variables

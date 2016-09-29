@@ -9,41 +9,21 @@ import (
 	"testing"
 )
 
-func TestCreateUserPageServeHTTP(t *testing.T) {
+func TestRestorePasswordServeHTTP(t *testing.T) {
 	db := &tDB{}
-	h := InitCreateUserPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	h := InitRestorePasswordPageHandler(db, "/home/valya/myprogs/yorablog/templates")
 
-	forms := make([]*url.Values, 0, 4)
+	forms := make([]*url.Values, 0, 2)
 
 	form := &url.Values{}
-	form.Add("name", "")
-	form.Add("email", "email1")
-	form.Add("password", "pass")
-	form.Add("password_confirm", "pass")
-
-	forms = append(forms, form)
-
-	form = &url.Values{}
-	form.Add("name", "User1")
-	form.Add("email", "")
-	form.Add("password", "pass")
-	form.Add("password_confirm", "pass")
-
-	forms = append(forms, form)
-
-	form = &url.Values{}
-	form.Add("name", "User1")
-	form.Add("email", "email1")
 	form.Add("password", "")
-	form.Add("password_confirm", "pass")
+	form.Add("passwordconfirm", "pass")
 
 	forms = append(forms, form)
 
 	form = &url.Values{}
-	form.Add("name", "User1")
-	form.Add("email", "email1")
 	form.Add("password", "pass")
-	form.Add("password_confirm", "pass1")
+	form.Add("passwordconfirm", "pass1")
 
 	forms = append(forms, form)
 
@@ -54,7 +34,7 @@ func TestCreateUserPageServeHTTP(t *testing.T) {
 	for _, f := range forms {
 		body := strings.NewReader(f.Encode())
 
-		req := httptest.NewRequest(http.MethodPost, "http://localhost/createuser/", body)
+		req := httptest.NewRequest(http.MethodPost, "http://localhost/restorepassword/?token=0123456789", body)
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Set("Cookie", c.String())
 
@@ -76,14 +56,12 @@ func TestCreateUserPageServeHTTP(t *testing.T) {
 	}
 
 	form = &url.Values{}
-	form.Add("name", "User1")
-	form.Add("email", "email1")
 	form.Add("password", "pass")
-	form.Add("password_confirm", "pass")
+	form.Add("passwordconfirm", "pass")
 
 	body := strings.NewReader(form.Encode())
 
-	req := httptest.NewRequest(http.MethodPost, "http://localhost/createuser/", body)
+	req := httptest.NewRequest(http.MethodPost, "http://localhost/restorepassword/?token=0123456789", body)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Cookie", c.String())
 
@@ -91,7 +69,7 @@ func TestCreateUserPageServeHTTP(t *testing.T) {
 
 	h.ServeHTTP(w, req)
 
-	if w.Code != http.StatusSeeOther {
+	if w.Code != http.StatusOK {
 		t.Errorf("Wrong error code: %v\n", w.Code)
 	}
 
