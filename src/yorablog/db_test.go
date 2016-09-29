@@ -41,9 +41,9 @@ func (db *tDB) DBGetUserBySessionID(sessionID string) (*yoradb.User, error) {
 
 	if user, ok := sessions[sessionID]; ok {
 		return user, nil
-	} else {
-		return nil, errors.New("User not found")
 	}
+
+	return nil, errors.New("User not found")
 }
 
 func (db *tDB) DBSessionValid(sessionID string) bool {
@@ -59,7 +59,7 @@ func (db *tDB) DBUserIsLogedIn(sessionID string) bool {
 }
 
 func (db *tDB) DBCreateUser(name, email, password string) (int, error) {
-	return 10, nil
+	return 1, nil
 }
 
 func (db *tDB) DBUpdateSessionWithUserID(sessionID string, userID int) error {

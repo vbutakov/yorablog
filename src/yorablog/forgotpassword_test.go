@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestForggetPasswordServeHTTP(t *testing.T) {
+func TestForgotPasswordServeHTTP(t *testing.T) {
 	db := &tDB{}
 	h := InitForgotPasswordPageHandler(db, "/home/valya/myprogs/yorablog/templates")
 	req := httptest.NewRequest("GET", "http://localhost/forgotpassword/", nil)

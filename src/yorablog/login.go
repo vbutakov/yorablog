@@ -73,7 +73,7 @@ func InitLoginPageHandler(db yoradb.DB, templatesPath string) *LoginPageHandler 
 // LoginHandle - handler for login page
 func (h LoginPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		lp := &LoginPage{URLQuery: r.URL.RawQuery}
 		lp.Email = r.FormValue("email")
 		lp.Password = r.FormValue("password")
@@ -114,7 +114,7 @@ func (h LoginPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 
-	} else if r.Method == "GET" {
+	} else if r.Method == http.MethodGet {
 		lp := &LoginPage{URLQuery: r.URL.RawQuery}
 		lp.Email = r.FormValue("email")
 

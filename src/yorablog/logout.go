@@ -11,7 +11,7 @@ type LogoutPageHandler struct {
 	db yoradb.DB
 }
 
-// InitCreatePageHandler initialize CreatePageHandler struct
+// InitLogoutPageHandler initialize CreatePageHandler struct
 func InitLogoutPageHandler(db yoradb.DB) *LogoutPageHandler {
 	return &LogoutPageHandler{db: db}
 }
