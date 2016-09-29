@@ -11,11 +11,11 @@ import (
 // SessionHandler is the handler for session creation
 type SessionHandler struct {
 	parent http.Handler
-	db     *yoradb.DB
+	db     yoradb.DB
 }
 
 // SessionRequired initialize session handler
-func SessionRequired(db *yoradb.DB, parent http.Handler) SessionHandler {
+func SessionRequired(db yoradb.DB, parent http.Handler) SessionHandler {
 	return SessionHandler{parent: parent, db: db}
 }
 

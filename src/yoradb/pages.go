@@ -20,7 +20,7 @@ type Post struct {
 }
 
 // DBInsertPost create new post in db
-func (db *DB) DBInsertPost(post *Post, userID int) (int, error) {
+func (db *mysqlDB) DBInsertPost(post *Post, userID int) (int, error) {
 	res, err := db.Conn.Exec(
 		`INSERT INTO Posts
 			(Title, Description, ImageURL, Annotation, PostText, Author)
@@ -42,7 +42,7 @@ func (db *DB) DBInsertPost(post *Post, userID int) (int, error) {
 }
 
 // DBGetPostByID find post byspecified id
-func (db *DB) DBGetPostByID(id int) (*Post, error) {
+func (db *mysqlDB) DBGetPostByID(id int) (*Post, error) {
 	row := db.Conn.QueryRow(
 		`SELECT p.id, p.Title, p.Description, p.ImageURL, p.Annotation, p.PostText,
         u.Name AS AuthorName, p.CreatedAt, p.UpdatedAt
@@ -75,7 +75,7 @@ func (db *DB) DBGetPostByID(id int) (*Post, error) {
 }
 
 // DBUpdatePost updates post in the database
-func (db *DB) DBUpdatePost(post *Post) error {
+func (db *mysqlDB) DBUpdatePost(post *Post) error {
 	_, err := db.Conn.Exec(
 		`UPDATE Posts
 		SET
@@ -96,7 +96,7 @@ func (db *DB) DBUpdatePost(post *Post) error {
 }
 
 // DBGetPosts returns fixed number of posts
-func (db *DB) DBGetPosts(num, offset int) ([]Post, error) {
+func (db *mysqlDB) DBGetPosts(num, offset int) ([]Post, error) {
 
 	posts := make([]Post, 0, 10)
 
