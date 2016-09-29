@@ -44,7 +44,7 @@ func InitCreateUserPageHandler(db yoradb.DB, templatesPath string) *CreateUserPa
 // CreateUserHandle - handler for login page
 func (h CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		var sendFormAgain = false
 		cup := &CreateUserPage{}
 		cup.Name = r.FormValue("name")
@@ -110,7 +110,7 @@ func (h CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 
-	} else if r.Method == "GET" {
+	} else if r.Method == http.MethodGet {
 		cup := &CreateUserPage{}
 		cup.Name = r.FormValue("name")
 		cup.Email = r.FormValue("email")

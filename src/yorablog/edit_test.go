@@ -21,7 +21,7 @@ func TestEditPageHavePermitServeHTTP(t *testing.T) {
 
 	body := strings.NewReader(form.Encode())
 
-	req := httptest.NewRequest("POST", "http://localhost/edit/10", body)
+	req := httptest.NewRequest(http.MethodPost, "http://localhost/edit/10", body)
 	w := httptest.NewRecorder()
 
 	c := &http.Cookie{}
@@ -56,7 +56,7 @@ func TestEditPageNotHavePermitServeHTTP(t *testing.T) {
 
 	body := strings.NewReader(form.Encode())
 
-	req := httptest.NewRequest("POST", "http://localhost/edit/10", body)
+	req := httptest.NewRequest(http.MethodPost, "http://localhost/edit/10", body)
 	w := httptest.NewRecorder()
 
 	c := &http.Cookie{}

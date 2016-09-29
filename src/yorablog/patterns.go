@@ -14,8 +14,6 @@ var (
 
 	// CreateURLPattern - URL pattern for create page
 	CreateURLPattern *regexp.Regexp
-
-	TestPostURLPattern *regexp.Regexp
 )
 
 // InitURLPatterns initialize URL patterns
@@ -24,6 +22,4 @@ func InitURLPatterns() {
 	PostURLPattern = regexp.MustCompile(`^/post/([\d]+)/?$`)
 	EditURLPattern = regexp.MustCompile(`^/edit/([\d]+)/?$`)
 	CreateURLPattern = regexp.MustCompile(`^/create/?$`)
-
-	TestPostURLPattern = regexp.MustCompile(`^/test_post/([\d]+)/?$`)
 }

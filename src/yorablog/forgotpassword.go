@@ -42,12 +42,12 @@ func InitForgotPasswordPageHandler(db yoradb.DB, templatesPath string) *ForgotPa
 // ForgotPasswordPageHandler - handler for web page
 func (h ForgotPasswordPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method == "GET" {
+	if r.Method == http.MethodGet {
 		data := &ForgotPasswordPage{}
 		w.WriteHeader(http.StatusOK)
 		h.template.Execute(w, data)
 		return
-	} else if r.Method == "POST" {
+	} else if r.Method == http.MethodPost {
 		email := r.FormValue("email")
 		data := &ForgotPasswordPage{
 			UserEmail: email,

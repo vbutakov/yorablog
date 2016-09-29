@@ -55,6 +55,7 @@ func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.parent.ServeHTTP(w, r)
 }
 
+// CreateSessionID create new random session identifier
 func CreateSessionID() string {
 	nsec := time.Now().UnixNano()
 	rand.Seed(nsec)

@@ -10,7 +10,7 @@ import (
 func TestPostPageServeHTTP(t *testing.T) {
 	db := &tDB{}
 	h := InitPostPageHandler(db, "/home/valya/myprogs/yorablog/templates")
-	req := httptest.NewRequest("GET", "http://localhost/post/3", nil)
+	req := httptest.NewRequest(http.MethodGet, "http://localhost/post/3", nil)
 	w := httptest.NewRecorder()
 
 	c := &http.Cookie{}

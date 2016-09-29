@@ -83,7 +83,7 @@ func (db *tDB) DBCreateRestorePasswordID(email, token string) (string, error) {
 }
 
 func (db *tDB) DBGetEmailByRestoreToken(token string) (string, error) {
-	return "", nil
+	return "a1@b.c", nil
 }
 
 func (db *tDB) DBUpdatePasswordByRestoreToken(token, email, password string) error {
