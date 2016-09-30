@@ -6,6 +6,14 @@ import (
 	"time"
 )
 
+// PostRepository interface for working with posts
+type PostRepository interface {
+	CreatePost(post *Post, userID int) (int, error)
+	GetPostByID(id int) (*Post, error)
+	UpdatePost(post *Post) error
+	GetPosts(num, offset int) ([]Post, error)
+}
+
 // Post data structure
 type Post struct {
 	ID          int
@@ -20,7 +28,7 @@ type Post struct {
 }
 
 // DBInsertPost create new post in db
-func (db *mysqlDB) DBCreatePost(post *Post, userID int) (int, error) {
+func (db *mysqlDB) CreatePost(post *Post, userID int) (int, error) {
 	res, err := db.Conn.Exec(
 		`INSERT INTO Posts
 			(Title, Description, ImageURL, Annotation, PostText, Author)
@@ -42,7 +50,7 @@ func (db *mysqlDB) DBCreatePost(post *Post, userID int) (int, error) {
 }
 
 // DBGetPostByID find post byspecified id
-func (db *mysqlDB) DBGetPostByID(id int) (*Post, error) {
+func (db *mysqlDB) GetPostByID(id int) (*Post, error) {
 	row := db.Conn.QueryRow(
 		`SELECT p.id, p.Title, p.Description, p.ImageURL, p.Annotation, p.PostText,
         u.Name AS AuthorName, p.CreatedAt, p.UpdatedAt
@@ -75,7 +83,7 @@ func (db *mysqlDB) DBGetPostByID(id int) (*Post, error) {
 }
 
 // DBUpdatePost updates post in the database
-func (db *mysqlDB) DBUpdatePost(post *Post) error {
+func (db *mysqlDB) UpdatePost(post *Post) error {
 	_, err := db.Conn.Exec(
 		`UPDATE Posts
 		SET
@@ -96,7 +104,7 @@ func (db *mysqlDB) DBUpdatePost(post *Post) error {
 }
 
 // DBGetPosts returns fixed number of posts
-func (db *mysqlDB) DBGetPosts(num, offset int) ([]Post, error) {
+func (db *mysqlDB) GetPosts(num, offset int) ([]Post, error) {
 
 	posts := make([]Post, 0, 10)
 

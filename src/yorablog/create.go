@@ -79,7 +79,7 @@ func (h CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		post.Text = template.HTML(r.FormValue("posttext"))
 
 		var postID int
-		postID, err = h.db.DBCreatePost(post, user.ID)
+		postID, err = h.db.CreatePost(post, user.ID)
 		if err != nil {
 			cp.Post = post
 			cp.ErrorMessage = err.Error()

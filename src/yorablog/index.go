@@ -94,7 +94,7 @@ func (h IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	ip.Posts, err = h.db.DBGetPosts(10, offset)
+	ip.Posts, err = h.db.GetPosts(10, offset)
 	if err != nil {
 		log.Printf("Error during db query for index page: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)

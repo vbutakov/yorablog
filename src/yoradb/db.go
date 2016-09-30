@@ -8,14 +8,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// PostRepository interface for working with posts
-type PostRepository interface {
-	DBCreatePost(post *Post, userID int) (int, error)
-	DBGetPostByID(id int) (*Post, error)
-	DBUpdatePost(post *Post) error
-	DBGetPosts(num, offset int) ([]Post, error)
-}
-
 // DB interface
 type DB interface {
 	DBGetUserBySessionID(sessionID string) (*User, error)

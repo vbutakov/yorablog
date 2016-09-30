@@ -71,7 +71,7 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
 
-		ep.Post, err = h.db.DBGetPostByID(postID)
+		ep.Post, err = h.db.GetPostByID(postID)
 		if err != nil {
 			log.Printf("Error during db query for edit page: %v\n", err)
 			http.NotFound(w, r)
@@ -96,7 +96,7 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		post.Annotation = template.HTML(r.FormValue("annotation"))
 		post.Text = template.HTML(r.FormValue("posttext"))
 
-		err = h.db.DBUpdatePost(post)
+		err = h.db.UpdatePost(post)
 		if err != nil {
 			ep.Post = post
 			ep.ErrorMessage = err.Error()

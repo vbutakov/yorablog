@@ -67,7 +67,7 @@ func (h PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pp.Post, err = h.db.DBGetPostByID(postID)
+	pp.Post, err = h.db.GetPostByID(postID)
 	if err != nil {
 		log.Printf("Error during db query for post page: %v\n", err)
 		http.NotFound(w, r)

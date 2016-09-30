@@ -9,11 +9,11 @@ import (
 type tDB struct {
 }
 
-func (db *tDB) DBCreatePost(post *yoradb.Post, userID int) (int, error) {
+func (db *tDB) CreatePost(post *yoradb.Post, userID int) (int, error) {
 	return 10, nil
 }
 
-func (db *tDB) DBGetPostByID(id int) (*yoradb.Post, error) {
+func (db *tDB) GetPostByID(id int) (*yoradb.Post, error) {
 	p := &yoradb.Post{
 		ID:          id,
 		Title:       "Тестовый заголовок",
@@ -29,11 +29,11 @@ func (db *tDB) DBGetPostByID(id int) (*yoradb.Post, error) {
 	return p, nil
 }
 
-func (db *tDB) DBUpdatePost(post *yoradb.Post) error {
+func (db *tDB) UpdatePost(post *yoradb.Post) error {
 	return nil
 }
 
-func (db *tDB) DBGetPosts(num, offset int) ([]yoradb.Post, error) {
+func (db *tDB) GetPosts(num, offset int) ([]yoradb.Post, error) {
 	return nil, nil
 }
 
