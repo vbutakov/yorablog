@@ -1,10 +1,8 @@
 package yoradb
 
 import (
-	"crypto/sha1"
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -20,74 +18,21 @@ type User struct {
 	EditPostPermit   bool
 }
 
+// UserRepository - interface for work with users
+type UserRepository interface {
+	CreateUser(name, email, password string) (int, error)
+	LoginUser(email, password string) (int, error)
+	GetUserByID(id int) (*User, error)
+	GetUserByEmail(email string) (*User, error)
+}
+
 var (
 	// ErrLoginFailed - error for login process
 	ErrLoginFailed = errors.New("User login failed")
 )
 
-// DBGetUserBySessionID return user data for session
-func (db *mysqlDB) DBGetUserBySessionID(sessionID string) (*User, error) {
-	row := db.Conn.QueryRow(
-		`SELECT
-			u.id,
-			u.Name,
-			u.Email,
-			u.Password,
-			u.CreatedAt,
-			u.UpdatedAt,
-			u.CreatePostPermit,
-			u.EditPostPermit
-		FROM Users u INNER JOIN Sessions s ON u.id = s.userID
-		WHERE s.id = ?;`,
-		sessionID)
-	var ID int
-	var Name string
-	var Email string
-	var Password string
-	var CreatedAt time.Time
-	var UpdatedAt time.Time
-	var CreatePostPermit bool
-	var EditPostPermit bool
-
-	err := row.Scan(&ID, &Name, &Email, &Password, &CreatedAt, &UpdatedAt,
-		&CreatePostPermit, &EditPostPermit)
-	user := &User{ID: ID,
-		Name:             Name,
-		Email:            Email,
-		Password:         Password,
-		CreatedAt:        CreatedAt,
-		UpdatedAt:        UpdatedAt,
-		CreatePostPermit: CreatePostPermit,
-		EditPostPermit:   EditPostPermit}
-	return user, err
-}
-
-// DBSessionValid check that session exist and not expire
-func (db *mysqlDB) DBSessionValid(sessionID string) bool {
-	var s string
-	row := db.Conn.QueryRow(
-		`SELECT id FROM Sessions WHERE id = ?;`,
-		sessionID)
-
-	err := row.Scan(&s)
-	if err == sql.ErrNoRows {
-		return false
-	}
-	return true
-}
-
-// DBInsertNewSession inserts new session into db
-func (db *mysqlDB) DBInsertNewSession(sessionID string, expires time.Time) error {
-	_, err := db.Conn.Exec(
-		`INSERT INTO Sessions
-			(id, Expires)
-		VALUES (?, ?);`,
-		sessionID, expires)
-	return err
-}
-
-// DBCreateUser add new user to Users table
-func (db *mysqlDB) DBCreateUser(name, email, password string) (int, error) {
+// CreateUser add new user to Users table
+func (db *MysqlDB) CreateUser(name, email, password string) (int, error) {
 	passwordHash := getPasswordHash(email, password)
 	res, err := db.Conn.Exec(
 		`INSERT INTO Users
@@ -104,24 +49,8 @@ func (db *mysqlDB) DBCreateUser(name, email, password string) (int, error) {
 	return int(id), err
 }
 
-func getPasswordHash(email, password string) string {
-	data := []byte(email + ":" + password)
-	ph := fmt.Sprintf("%x", sha1.Sum(data))
-	return ph
-}
-
-// DBUpdateSessionWithUserID link userID with sessionID
-func (db *mysqlDB) DBUpdateSessionWithUserID(sessionID string, userID int) error {
-	_, err := db.Conn.Exec(
-		`UPDATE Sessions
-		SET UserId = ?
-		WHERE id = ?;`,
-		userID, sessionID)
-	return err
-}
-
-// DBLoginUser check user password in db and return userID
-func (db *mysqlDB) DBLoginUser(email, password string) (int, error) {
+// LoginUser check user password in db and return userID
+func (db *MysqlDB) LoginUser(email, password string) (int, error) {
 	passwordHash := getPasswordHash(email, password)
 	row := db.Conn.QueryRow(
 		`SELECT id FROM Users WHERE Email = ? AND Password = ?;`,
@@ -138,85 +67,78 @@ func (db *mysqlDB) DBLoginUser(email, password string) (int, error) {
 	return userID, nil
 }
 
-// DBLogoutUserFromSession clears userID for session
-func (db *mysqlDB) DBLogoutUserFromSession(sessionID string) error {
-	_, err := db.Conn.Exec(
-		`UPDATE Sessions
-		SET UserId = NULL
-		WHERE id = ?;`,
-		sessionID)
-	return err
+// GetUserByID reads user form db
+func (db *MysqlDB) GetUserByID(id int) (*User, error) {
+	row := db.Conn.QueryRow(
+		`SELECT
+			u.Name,
+			u.Email,
+			u.CreatedAt,
+			u.UpdatedAt,
+			u.CreatePostPermit,
+			u.EditPostPermit
+		FROM Users u
+		WHERE u.id = ?;`,
+		id)
+
+	var Name string
+	var Email string
+	var CreatedAt time.Time
+	var UpdatedAt time.Time
+	var CreatePostPermit bool
+	var EditPostPermit bool
+
+	err := row.Scan(&Name, &Email, &CreatedAt, &UpdatedAt, &CreatePostPermit, &EditPostPermit)
+	if err != nil {
+		return nil, err
+	}
+
+	u := &User{
+		ID:               id,
+		Name:             Name,
+		Email:            Email,
+		CreatedAt:        CreatedAt,
+		UpdatedAt:        UpdatedAt,
+		CreatePostPermit: CreatePostPermit,
+		EditPostPermit:   EditPostPermit}
+	return u, nil
 }
 
-// DBEmailExist check if user withspecified email exist in db
-func (db *mysqlDB) DBEmailExist(email string) bool {
+// GetUserByEmail reads user form db
+func (db *MysqlDB) GetUserByEmail(email string) (*User, error) {
 	row := db.Conn.QueryRow(
-		`SELECT u.Email FROM Users u WHERE u.Email = ?;`,
+		`SELECT
+			u.id,
+			u.Name,
+			u.Email,
+			u.CreatedAt,
+			u.UpdatedAt,
+			u.CreatePostPermit,
+			u.EditPostPermit
+		FROM Users u
+		WHERE u.Email = ?;`,
 		email)
 
-	var s string
-	err := row.Scan(&s)
-	if err == sql.ErrNoRows {
-		return false
-	} else if err != nil {
-		return false
-	} else {
-		return true
-	}
-}
+	var ID int
+	var Name string
+	var Email string
+	var CreatedAt time.Time
+	var UpdatedAt time.Time
+	var CreatePostPermit bool
+	var EditPostPermit bool
 
-// DBCreateRestorePasswordID create restore token and return it
-func (db *mysqlDB) DBCreateRestorePasswordID(email, token string) (string, error) {
-	//token := CreateSessionID()
-	_, err := db.Conn.Exec(
-		`INSERT INTO RestorePasswords (id, Email)
-        VALUES(?,?);`,
-		token, email)
-	return token, err
-}
-
-// DBGetEmailByRestoreToken return email for specified restore password token
-func (db *mysqlDB) DBGetEmailByRestoreToken(token string) (string, error) {
-	res := db.Conn.QueryRow(
-		`SELECT Email FROM RestorePasswords WHERE id = ?;`,
-		token)
-
-	var email string
-	err := res.Scan(&email)
-
-	return email, err
-}
-
-// DBUpdatePasswordByRestoreToken update user password by specified restore token
-func (db *mysqlDB) DBUpdatePasswordByRestoreToken(token, email, password string) error {
-	tx, err := db.Conn.Begin()
+	err := row.Scan(&ID, &Name, &Email, &CreatedAt, &UpdatedAt, &CreatePostPermit, &EditPostPermit)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	passwordHash := getPasswordHash(email, password)
-
-	_, err = tx.Exec(
-		`UPDATE Users u INNER JOIN RestorePasswords rp ON u.Email = rp.Email
-    SET u.Password = ?
-    WHERE rp.id = ?;`,
-		passwordHash, token)
-	if err != nil {
-		_ = tx.Rollback()
-		return err
-	}
-
-	_, err = tx.Exec(
-		`DELETE FROM RestorePasswords
-    WHERE id = ?;`,
-		token)
-
-	if err != nil {
-		_ = tx.Rollback()
-		return err
-	}
-
-	_ = tx.Commit()
-
-	return err
+	u := &User{
+		ID:               ID,
+		Name:             Name,
+		Email:            Email,
+		CreatedAt:        CreatedAt,
+		UpdatedAt:        UpdatedAt,
+		CreatePostPermit: CreatePostPermit,
+		EditPostPermit:   EditPostPermit}
+	return u, nil
 }

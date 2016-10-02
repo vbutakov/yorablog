@@ -27,8 +27,8 @@ type Post struct {
 	UpdatedAt   time.Time
 }
 
-// DBInsertPost create new post in db
-func (db *mysqlDB) CreatePost(post *Post, userID int) (int, error) {
+// CreatePost create new post in db
+func (db *MysqlDB) CreatePost(post *Post, userID int) (int, error) {
 	res, err := db.Conn.Exec(
 		`INSERT INTO Posts
 			(Title, Description, ImageURL, Annotation, PostText, Author)
@@ -49,8 +49,8 @@ func (db *mysqlDB) CreatePost(post *Post, userID int) (int, error) {
 	return int(postID), err
 }
 
-// DBGetPostByID find post byspecified id
-func (db *mysqlDB) GetPostByID(id int) (*Post, error) {
+// GetPostByID find post byspecified id
+func (db *MysqlDB) GetPostByID(id int) (*Post, error) {
 	row := db.Conn.QueryRow(
 		`SELECT p.id, p.Title, p.Description, p.ImageURL, p.Annotation, p.PostText,
         u.Name AS AuthorName, p.CreatedAt, p.UpdatedAt
@@ -82,8 +82,8 @@ func (db *mysqlDB) GetPostByID(id int) (*Post, error) {
 	return post, err
 }
 
-// DBUpdatePost updates post in the database
-func (db *mysqlDB) UpdatePost(post *Post) error {
+// UpdatePost updates post in the database
+func (db *MysqlDB) UpdatePost(post *Post) error {
 	_, err := db.Conn.Exec(
 		`UPDATE Posts
 		SET
@@ -103,8 +103,8 @@ func (db *mysqlDB) UpdatePost(post *Post) error {
 	return err
 }
 
-// DBGetPosts returns fixed number of posts
-func (db *mysqlDB) GetPosts(num, offset int) ([]Post, error) {
+// GetPosts returns fixed number of posts
+func (db *MysqlDB) GetPosts(num, offset int) ([]Post, error) {
 
 	posts := make([]Post, 0, 10)
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"time"
 	"yoradb"
 )
@@ -37,41 +36,20 @@ func (db *tDB) GetPosts(num, offset int) ([]yoradb.Post, error) {
 	return nil, nil
 }
 
-func (db *tDB) DBGetUserBySessionID(sessionID string) (*yoradb.User, error) {
-
-	if user, ok := sessions[sessionID]; ok {
-		return user, nil
-	}
-
-	return nil, errors.New("User not found")
-}
-
-func (db *tDB) DBSessionValid(sessionID string) bool {
-	return true
-}
-
-func (db *tDB) DBInsertNewSession(sessionID string, expires time.Time) error {
-	return nil
-}
-
-func (db *tDB) DBCreateUser(name, email, password string) (int, error) {
+func (db *tDB) CreateUser(name, email, password string) (int, error) {
 	return 1, nil
 }
 
-func (db *tDB) DBUpdateSessionWithUserID(sessionID string, userID int) error {
-	return nil
+func (db *tDB) LoginUser(email, password string) (int, error) {
+	return 1, nil
 }
 
-func (db *tDB) DBLoginUser(email, password string) (int, error) {
-	return 10, nil
+func (db *tDB) GetUserByID(id int) (*User, error) {
+
 }
 
-func (db *tDB) DBLogoutUserFromSession(sessionID string) error {
-	return nil
-}
+func (db *tDB) GetUserByEmail(email string) (*User, error) {
 
-func (db *tDB) DBEmailExist(email string) bool {
-	return true
 }
 
 func (db *tDB) DBCreateRestorePasswordID(email, token string) (string, error) {
