@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,11 +14,8 @@ func TestIndexServeHTTP(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost/", nil)
 	w := httptest.NewRecorder()
 
-	c := &http.Cookie{}
-	c.Name = "SessionID"
-	c.Value = "01"
-
-	req.Header.Set("Cookie", c.String())
+	ctx := context.WithValue(req.Context(), "User", sessions["01"])
+	req = req.WithContext(ctx)
 
 	h.ServeHTTP(w, req)
 

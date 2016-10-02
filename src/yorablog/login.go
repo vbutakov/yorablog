@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"net/url"
@@ -21,40 +22,55 @@ type LoginPage struct {
 // LoginPageHandler - handler for login pages
 type LoginPageHandler struct {
 	template *yotemplate.Template
-	db       yoradb.DB
+	sr       yoradb.SessionRepository
+	ur       yoradb.UserRepository
 }
 
 // LoginRequiredHandler structure for checking if user login required
 type LoginRequiredHandler struct {
 	parent http.Handler
-	db     yoradb.DB
+	sr     yoradb.SessionRepository
+	ur     yoradb.UserRepository
 }
 
 // LoginRequired initialize LoginRequiredHandler
-func LoginRequired(db yoradb.DB, parent http.Handler) LoginRequiredHandler {
-	return LoginRequiredHandler{parent: parent, db: db}
+func LoginRequired(sr yoradb.SessionRepository, ur yoradb.UserRepository, parent http.Handler) LoginRequiredHandler {
+	return LoginRequiredHandler{parent: parent, sr: sr, ur: ur}
 }
 
 func (h LoginRequiredHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("SessionID")
-	if err != nil {
-		log.Printf("Error! Cannot check if login required without session: %v\n", err)
+
+	session, ok := SessionFromContext(r.Context())
+	if !ok {
+		log.Printf("Error! Cannot check if login required without session.\n")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	if !h.db.DBUserIsLogedIn(cookie.Value) {
+	if !session.UserID.Valid {
 		val := make(url.Values)
 		val.Add("return", r.URL.String())
 		redirectURL := "/login/?" + val.Encode()
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	} else {
-		h.parent.ServeHTTP(w, r)
+		user, err := h.ur.GetUserByID(session.UserID.Int64)
+		if err != nil {
+			log.Printf("Error! Cannot read user from db on login page: %v.\n", err)
+			val := make(url.Values)
+			val.Add("return", r.URL.String())
+			redirectURL := "/login/?" + val.Encode()
+			http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		} else {
+			uctx := context.WithValue(r.Context(), keyUser, user)
+			r = r.WithContext(uctx)
+
+			h.parent.ServeHTTP(w, r)
+		}
 	}
 }
 
 // InitLoginPageHandler creates and inits login page handler
-func InitLoginPageHandler(db yoradb.DB, templatesPath string) *LoginPageHandler {
+func InitLoginPageHandler(sr yoradb.SessionRepository, ur yoradb.UserRepository, templatesPath string) *LoginPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -67,7 +83,7 @@ func InitLoginPageHandler(db yoradb.DB, templatesPath string) *LoginPageHandler 
 	}
 	log.Println("Login page templates are initialized.")
 
-	return &LoginPageHandler{template: templ, db: db}
+	return &LoginPageHandler{template: templ, sr: sr, ur: ur}
 }
 
 // LoginHandle - handler for login page
@@ -78,7 +94,7 @@ func (h LoginPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		lp.Email = r.FormValue("email")
 		lp.Password = r.FormValue("password")
 
-		userID, err := h.db.DBLoginUser(lp.Email, lp.Password)
+		userID, err := h.ur.LoginUser(lp.Email, lp.Password)
 		if err == yoradb.ErrLoginFailed {
 
 			lp.ErrorMessage = "Не угадали email и пароль"
@@ -93,14 +109,15 @@ func (h LoginPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		cookie, err := r.Cookie("SessionID")
-		if err != nil {
-			log.Printf("Error during user login: %v\n", err)
+		session, ok := SessionFromContext(r.Context())
+		if !ok {
+			log.Printf("Error during user login: cannot read session.\n")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		sessionID := cookie.Value
-		err = h.db.DBUpdateSessionWithUserID(sessionID, userID)
+
+		session.UserID.Int64 = userID
+		err = h.sr.UpdateSession(session)
 		if err != nil {
 			log.Printf("Error during user login: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)

@@ -25,11 +25,11 @@ type PostPage struct {
 // PostPageHandler is a handler for post page processing
 type PostPageHandler struct {
 	template *yotemplate.Template
-	db       yoradb.DB
+	db       yoradb.PostRepository
 }
 
 // InitPostPageHandler initialize PostPageHandler struct
-func InitPostPageHandler(db yoradb.DB, templatesPath string) *PostPageHandler {
+func InitPostPageHandler(db yoradb.PostRepository, templatesPath string) *PostPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -56,25 +56,18 @@ func (h PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	pp := &PostPage{}
 
-	cookie, err := r.Cookie("SessionID")
-	if err != nil {
-		log.Printf("Error during cookie read on post page: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	sessionID := cookie.Value
-	user, err := h.db.DBGetUserBySessionID(sessionID)
-	if err == nil {
+	user, ok := UserFromContext(r.Context())
+	if ok {
 		pp.UserName = user.Name
 	}
 
-	postID, err := strconv.Atoi(res[1])
+	postID, err := strconv.ParseInt(res[1], 10, 64)
 	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	pp.Post, err = h.db.DBGetPostByID(postID)
+	pp.Post, err = h.db.GetPostByID(postID)
 	if err != nil {
 		log.Printf("Error during db query for post page: %v\n", err)
 		http.NotFound(w, r)

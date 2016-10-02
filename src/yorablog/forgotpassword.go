@@ -19,11 +19,14 @@ type ForgotPasswordPage struct {
 // ForgotPasswordPageHandler is a handler for page processing
 type ForgotPasswordPageHandler struct {
 	template *yotemplate.Template
-	db       yoradb.DB
+	ur       yoradb.UserRepository
+	rpr      yoradb.RestorePasswordRepository
 }
 
 // InitForgotPasswordPageHandler initialize ForgotPasswordPageHandler struct
-func InitForgotPasswordPageHandler(db yoradb.DB, templatesPath string) *ForgotPasswordPageHandler {
+func InitForgotPasswordPageHandler(ur yoradb.UserRepository,
+	rpr yoradb.RestorePasswordRepository,
+	templatesPath string) *ForgotPasswordPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -36,7 +39,7 @@ func InitForgotPasswordPageHandler(db yoradb.DB, templatesPath string) *ForgotPa
 	}
 	log.Println("Forgot password page template is initialized.")
 
-	return &ForgotPasswordPageHandler{template: templ, db: db}
+	return &ForgotPasswordPageHandler{template: templ, ur: ur, rpr: rpr}
 }
 
 // ForgotPasswordPageHandler - handler for web page
@@ -53,7 +56,8 @@ func (h ForgotPasswordPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 			UserEmail: email,
 		}
 
-		if !h.db.DBEmailExist(email) {
+		_, err := h.ur.GetUserByEmail(email)
+		if err != nil {
 			data.ErrorMessage = "Пользователя с таким email-ом не зарегистрировано."
 			w.WriteHeader(http.StatusOK)
 			h.template.Execute(w, data)
@@ -61,7 +65,7 @@ func (h ForgotPasswordPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		}
 
 		token := CreateSessionID()
-		id, err := h.db.DBCreateRestorePasswordID(email, token)
+		id, err := h.rpr.CreateRestorePasswordID(email, token)
 		if err != nil {
 			data.ErrorMessage = err.Error()
 

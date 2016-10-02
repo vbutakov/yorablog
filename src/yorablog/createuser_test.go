@@ -2,16 +2,18 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
+	"yoradb"
 )
 
 func TestCreateUserPageServeHTTP(t *testing.T) {
 	db := &tDB{}
-	h := InitCreateUserPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	h := InitCreateUserPageHandler(db, db, "/home/valya/myprogs/yorablog/templates")
 
 	forms := make([]*url.Values, 0, 4)
 
@@ -47,16 +49,16 @@ func TestCreateUserPageServeHTTP(t *testing.T) {
 
 	forms = append(forms, form)
 
-	c := &http.Cookie{}
-	c.Name = "SessionID"
-	c.Value = "99"
+	session := &yoradb.Session{ID: "99"}
 
 	for _, f := range forms {
 		body := strings.NewReader(f.Encode())
 
 		req := httptest.NewRequest(http.MethodPost, "http://localhost/createuser/", body)
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		req.Header.Set("Cookie", c.String())
+
+		ctx := context.WithValue(req.Context(), keySession, session)
+		req = req.WithContext(ctx)
 
 		w := httptest.NewRecorder()
 
@@ -85,7 +87,9 @@ func TestCreateUserPageServeHTTP(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodPost, "http://localhost/createuser/", body)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Cookie", c.String())
+
+	ctx := context.WithValue(req.Context(), keySession, session)
+	req = req.WithContext(ctx)
 
 	w := httptest.NewRecorder()
 

@@ -20,11 +20,11 @@ type CreatePage struct {
 // CreatePageHandler is a handler for edit create processing
 type CreatePageHandler struct {
 	template *yotemplate.Template
-	db       yoradb.DB
+	db       yoradb.PostRepository
 }
 
 // InitCreatePageHandler initialize CreatePageHandler struct
-func InitCreatePageHandler(db yoradb.DB, templatesPath string) *CreatePageHandler {
+func InitCreatePageHandler(db yoradb.PostRepository, templatesPath string) *CreatePageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -45,21 +45,15 @@ func (h CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cp := &CreatePage{Post: &yoradb.Post{}}
 
-	cookie, err := r.Cookie("SessionID")
-	if err != nil {
-		log.Printf("Error during cookie read on post page: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	sessionID := cookie.Value
-	user, err := h.db.DBGetUserBySessionID(sessionID)
-	if err == nil {
+	user, ok := UserFromContext(r.Context())
+	if ok {
 		cp.UserName = user.Name
 	}
 
 	if !user.CreatePostPermit {
 		w.WriteHeader(http.StatusForbidden)
-		ErrorTemplate.Execute(w, "Недостаточно прав для создания статьи")
+		cp.ErrorMessage = "Недостаточно прав для создания статьи"
+		ErrorTemplate.Execute(w, cp)
 		return
 	}
 
@@ -85,8 +79,8 @@ func (h CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		post.Annotation = template.HTML(r.FormValue("annotation"))
 		post.Text = template.HTML(r.FormValue("posttext"))
 
-		var postID int
-		postID, err = h.db.DBInsertPost(post, user.ID)
+		var postID int64
+		postID, err = h.db.CreatePost(post, user.ID)
 		if err != nil {
 			cp.Post = post
 			cp.ErrorMessage = err.Error()

@@ -21,11 +21,11 @@ type EditPage struct {
 // EditPageHandler is a handler for edit page processing
 type EditPageHandler struct {
 	template *yotemplate.Template
-	db       yoradb.DB
+	db       yoradb.PostRepository
 }
 
 // InitEditPageHandler initialize EditPageHandler struct
-func InitEditPageHandler(db yoradb.DB, templatesPath string) *EditPageHandler {
+func InitEditPageHandler(db yoradb.PostRepository, templatesPath string) *EditPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -50,7 +50,7 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postID, err := strconv.Atoi(res[1])
+	postID, err := strconv.ParseInt(res[1], 10, 64)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -58,27 +58,21 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ep := &EditPage{}
 
-	cookie, err := r.Cookie("SessionID")
-	if err != nil {
-		log.Printf("Error during cookie read on index page: %v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	sessionID := cookie.Value
-	user, err := h.db.DBGetUserBySessionID(sessionID)
-	if err == nil {
+	user, ok := UserFromContext(r.Context())
+	if ok {
 		ep.UserName = user.Name
 	}
 
 	if !user.EditPostPermit {
 		w.WriteHeader(http.StatusForbidden)
-		ErrorTemplate.Execute(w, "Недостаточно прав для редактирования статьи")
+		ep.ErrorMessage = "Недостаточно прав для редактирования статьи"
+		ErrorTemplate.Execute(w, ep)
 		return
 	}
 
-	if r.Method == "GET" {
+	if r.Method == http.MethodGet {
 
-		ep.Post, err = h.db.DBGetPostByID(postID)
+		ep.Post, err = h.db.GetPostByID(postID)
 		if err != nil {
 			log.Printf("Error during db query for edit page: %v\n", err)
 			http.NotFound(w, r)
@@ -88,7 +82,7 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
 		h.template.Execute(w, ep)
-	} else if r.Method == "POST" {
+	} else if r.Method == http.MethodPost {
 		err = r.ParseForm()
 		if err != nil {
 			log.Printf("Error during edit form parse: %v\n", err)
@@ -103,7 +97,7 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		post.Annotation = template.HTML(r.FormValue("annotation"))
 		post.Text = template.HTML(r.FormValue("posttext"))
 
-		err = h.db.DBUpdatePost(post)
+		err = h.db.UpdatePost(post)
 		if err != nil {
 			ep.Post = post
 			ep.ErrorMessage = err.Error()

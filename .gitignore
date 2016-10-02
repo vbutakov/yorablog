@@ -31,3 +31,5 @@ deploy.sh
 sync_photos.sh
 photos
 src/golang.org
+src/github.com/rogpeppe/
+
