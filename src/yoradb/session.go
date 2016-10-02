@@ -1,11 +1,14 @@
 package yoradb
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 // Session - user session data
 type Session struct {
 	ID        string
-	UserID    int
+	UserID    sql.NullInt64
 	Expires   time.Time
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -17,6 +20,7 @@ type SessionRepository interface {
 	GetSessionByID(id string) (*Session, error)
 	UpdateSession(s *Session) error
 	DeleteSession(s *Session) error
+	LogoutFromSession(s *Session) error
 }
 
 // CreateSession - insert new session into db
@@ -41,7 +45,7 @@ func (db *MysqlDB) GetSessionByID(id string) (*Session, error) {
 		id)
 
 	var ID string
-	var UserID int
+	var UserID sql.NullInt64
 	var Expires time.Time
 	var CreatedAt time.Time
 	var UpdatedAt time.Time
@@ -66,7 +70,23 @@ func (db *MysqlDB) UpdateSession(s *Session) error {
 			Expires = ?
 		WHERE id = ?;`,
 		s.ID,
-		s.UserID,
+		s.UserID.Int64,
+		s.Expires,
+		s.ID)
+
+	return err
+}
+
+// LogoutFromSession - modify existing session data in db
+func (db *MysqlDB) LogoutFromSession(s *Session) error {
+	_, err := db.Conn.Exec(
+		`UPDATE Sessions
+		SET
+			id = ?,
+			UserId = NULL,
+			Expires = ?
+		WHERE id = ?;`,
+		s.ID,
 		s.Expires,
 		s.ID)
 

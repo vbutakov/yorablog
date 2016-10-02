@@ -58,7 +58,7 @@ func (h IndexPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ip := &IndexPage{}
 
-	user, ok := r.Context().Value("User").(*yoradb.User)
+	user, ok := UserFromContext(r.Context())
 	if ok {
 		ip.UserName = user.Name
 	}

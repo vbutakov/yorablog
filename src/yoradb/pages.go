@@ -8,15 +8,15 @@ import (
 
 // PostRepository interface for working with posts
 type PostRepository interface {
-	CreatePost(post *Post, userID int) (int, error)
-	GetPostByID(id int) (*Post, error)
+	CreatePost(post *Post, userID int64) (int64, error)
+	GetPostByID(id int64) (*Post, error)
 	UpdatePost(post *Post) error
 	GetPosts(num, offset int) ([]Post, error)
 }
 
 // Post data structure
 type Post struct {
-	ID          int
+	ID          int64
 	Title       template.HTML
 	Description template.HTML
 	ImageURL    string
@@ -28,7 +28,7 @@ type Post struct {
 }
 
 // CreatePost create new post in db
-func (db *MysqlDB) CreatePost(post *Post, userID int) (int, error) {
+func (db *MysqlDB) CreatePost(post *Post, userID int64) (int64, error) {
 	res, err := db.Conn.Exec(
 		`INSERT INTO Posts
 			(Title, Description, ImageURL, Annotation, PostText, Author)
@@ -46,11 +46,11 @@ func (db *MysqlDB) CreatePost(post *Post, userID int) (int, error) {
 	var postID int64
 	postID, err = res.LastInsertId()
 
-	return int(postID), err
+	return postID, err
 }
 
 // GetPostByID find post byspecified id
-func (db *MysqlDB) GetPostByID(id int) (*Post, error) {
+func (db *MysqlDB) GetPostByID(id int64) (*Post, error) {
 	row := db.Conn.QueryRow(
 		`SELECT p.id, p.Title, p.Description, p.ImageURL, p.Annotation, p.PostText,
         u.Name AS AuthorName, p.CreatedAt, p.UpdatedAt
@@ -58,7 +58,7 @@ func (db *MysqlDB) GetPostByID(id int) (*Post, error) {
         WHERE p.id = ?;`,
 		id)
 
-	var ID int
+	var ID int64
 	var Title string
 	var Description string
 	var ImageURL string
@@ -122,7 +122,7 @@ func (db *MysqlDB) GetPosts(num, offset int) ([]Post, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var ID int
+		var ID int64
 		var Title string
 		var Description string
 		var ImageURL string

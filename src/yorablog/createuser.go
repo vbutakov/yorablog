@@ -21,11 +21,12 @@ type CreateUserPage struct {
 // CreateUserPageHandler - handler for create user pages
 type CreateUserPageHandler struct {
 	template *yotemplate.Template
-	db       yoradb.DB
+	sr       yoradb.SessionRepository
+	ur       yoradb.UserRepository
 }
 
 // InitCreateUserPageHandler creates and inits login page handler
-func InitCreateUserPageHandler(db yoradb.DB, templatesPath string) *CreateUserPageHandler {
+func InitCreateUserPageHandler(sr yoradb.SessionRepository, ur yoradb.UserRepository, templatesPath string) *CreateUserPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -38,7 +39,7 @@ func InitCreateUserPageHandler(db yoradb.DB, templatesPath string) *CreateUserPa
 	}
 	log.Println("CreateUser page templates are initialized.")
 
-	return &CreateUserPageHandler{template: templ, db: db}
+	return &CreateUserPageHandler{template: templ, sr: sr, ur: ur}
 }
 
 // CreateUserHandle - handler for login page
@@ -77,7 +78,7 @@ func (h CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 			h.template.Execute(w, cup)
 		} else {
 			// create new user
-			userID, err := h.db.DBCreateUser(cup.Name, cup.Email, cup.Password)
+			userID, err := h.ur.CreateUser(cup.Name, cup.Email, cup.Password)
 			if err != nil {
 				cup.ErrorMessage = err.Error()
 
@@ -89,14 +90,15 @@ func (h CreateUserPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 				return
 			}
 
-			cookie, err := r.Cookie("SessionID")
-			if err != nil {
-				log.Printf("Error during user create: %v\n", err)
+			session, ok := SessionFromContext(r.Context())
+			if !ok {
+				log.Printf("Error during user create: cannot get session from context.\n")
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			sessionID := cookie.Value
-			err = h.db.DBUpdateSessionWithUserID(sessionID, userID)
+
+			session.UserID.Int64 = userID
+			err = h.sr.UpdateSession(session)
 			if err != nil {
 				cup.ErrorMessage = err.Error()
 

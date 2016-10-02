@@ -56,12 +56,12 @@ func (h PostPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	pp := &PostPage{}
 
-	user, ok := r.Context().Value("User").(*yoradb.User)
+	user, ok := UserFromContext(r.Context())
 	if ok {
 		pp.UserName = user.Name
 	}
 
-	postID, err := strconv.Atoi(res[1])
+	postID, err := strconv.ParseInt(res[1], 10, 64)
 	if err != nil {
 		http.NotFound(w, r)
 		return

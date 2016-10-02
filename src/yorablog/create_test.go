@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -10,8 +12,7 @@ import (
 
 func TestCreatePageHavePermitServeHTTP(t *testing.T) {
 	db := &tDB{}
-	temp := InitCreatePageHandler(db, "/home/valya/myprogs/yorablog/templates")
-	h := SessionRequired(db, LoginRequired(db, temp))
+	h := InitCreatePageHandler(db, "/home/valya/myprogs/yorablog/templates")
 
 	form := &url.Values{}
 	form.Add("title", "Тестовый заголовок")
@@ -25,11 +26,8 @@ func TestCreatePageHavePermitServeHTTP(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "http://localhost/create", body)
 	w := httptest.NewRecorder()
 
-	c := &http.Cookie{}
-	c.Name = "SessionID"
-	c.Value = "04"
-
-	req.Header.Set("Cookie", c.String())
+	ctx := context.WithValue(req.Context(), keyUser, sessions["04"])
+	req = req.WithContext(ctx)
 
 	h.ServeHTTP(w, req)
 
@@ -45,8 +43,7 @@ func TestCreatePageHavePermitServeHTTP(t *testing.T) {
 
 func TestCreatePageNotHavePermitServeHTTP(t *testing.T) {
 	db := &tDB{}
-	temp := InitCreatePageHandler(db, "/home/valya/myprogs/yorablog/templates")
-	h := SessionRequired(db, LoginRequired(db, temp))
+	h := InitCreatePageHandler(db, "/home/valya/myprogs/yorablog/templates")
 
 	form := &url.Values{}
 	form.Add("title", "Тестовый заголовок")
@@ -60,15 +57,17 @@ func TestCreatePageNotHavePermitServeHTTP(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "http://localhost/create", body)
 	w := httptest.NewRecorder()
 
-	c := &http.Cookie{}
-	c.Name = "SessionID"
-	c.Value = "01"
-
-	req.Header.Set("Cookie", c.String())
+	ctx := context.WithValue(req.Context(), "User", sessions["01"])
+	req = req.WithContext(ctx)
 
 	h.ServeHTTP(w, req)
 
 	if w.Code != http.StatusForbidden {
 		t.Errorf("Wrong error code: %v\n", w.Code)
 	}
+
+	if !bytes.Contains(w.Body.Bytes(), []byte("</html>")) {
+		t.Errorf("Page is not complete")
+	}
+
 }

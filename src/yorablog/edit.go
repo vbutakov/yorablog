@@ -50,7 +50,7 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postID, err := strconv.Atoi(res[1])
+	postID, err := strconv.ParseInt(res[1], 10, 64)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -58,14 +58,15 @@ func (h EditPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ep := &EditPage{}
 
-	user, ok := r.Context().Value("User").(*yoradb.User)
+	user, ok := UserFromContext(r.Context())
 	if ok {
 		ep.UserName = user.Name
 	}
 
 	if !user.EditPostPermit {
 		w.WriteHeader(http.StatusForbidden)
-		ErrorTemplate.Execute(w, "Недостаточно прав для редактирования статьи")
+		ep.ErrorMessage = "Недостаточно прав для редактирования статьи"
+		ErrorTemplate.Execute(w, ep)
 		return
 	}
 

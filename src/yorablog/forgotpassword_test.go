@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,15 +10,12 @@ import (
 
 func TestForgotPasswordServeHTTP(t *testing.T) {
 	db := &tDB{}
-	h := InitForgotPasswordPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+	h := InitForgotPasswordPageHandler(db, db, "/home/valya/myprogs/yorablog/templates")
 	req := httptest.NewRequest(http.MethodGet, "http://localhost/forgotpassword/", nil)
 	w := httptest.NewRecorder()
 
-	c := &http.Cookie{}
-	c.Name = "SessionID"
-	c.Value = "01"
-
-	req.Header.Set("Cookie", c.String())
+	ctx := context.WithValue(req.Context(), "User", sessions["04"])
+	req = req.WithContext(ctx)
 
 	h.ServeHTTP(w, req)
 

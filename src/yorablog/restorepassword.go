@@ -22,11 +22,11 @@ type RestorePasswordPage struct {
 // RestorePasswordPageHandler is a handler for page processing
 type RestorePasswordPageHandler struct {
 	template *yotemplate.Template
-	db       yoradb.DB
+	rpr      yoradb.RestorePasswordRepository
 }
 
 // InitRestorePasswordPageHandler initialize RestorePasswordPageHandler struct
-func InitRestorePasswordPageHandler(db yoradb.DB, templatesPath string) *RestorePasswordPageHandler {
+func InitRestorePasswordPageHandler(rpr yoradb.RestorePasswordRepository, templatesPath string) *RestorePasswordPageHandler {
 
 	pathes := make([]string, 3)
 	pathes[0] = filepath.Join(templatesPath, "layout.gohtml")
@@ -39,7 +39,7 @@ func InitRestorePasswordPageHandler(db yoradb.DB, templatesPath string) *Restore
 	}
 	log.Println("Restore password page templates are initialized.")
 
-	return &RestorePasswordPageHandler{template: templ, db: db}
+	return &RestorePasswordPageHandler{template: templ, rpr: rpr}
 }
 
 // RestorePasswordPageHandler - handler for index page
@@ -55,7 +55,7 @@ func (h RestorePasswordPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	email, err := h.db.DBGetEmailByRestoreToken(token)
+	email, err := h.rpr.GetEmailByRestoreToken(token)
 	if err == sql.ErrNoRows {
 		rp.Message = "Не корректный токен. Для восстановления пароля воспользуйтесь ссылкой из письма."
 	} else if err != nil {
@@ -77,7 +77,7 @@ func (h RestorePasswordPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 			rp.ErrorMessage = "Пароль не должен быть пустым."
 		} else {
 			// password is ok
-			err = h.db.DBUpdatePasswordByRestoreToken(token, email, password)
+			err = h.rpr.UpdatePasswordByRestoreToken(token, email, password)
 			if err != nil {
 				log.Printf("Error during update password by restore token: %v\n", err)
 				w.WriteHeader(http.StatusInternalServerError)

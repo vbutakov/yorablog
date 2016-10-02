@@ -45,14 +45,15 @@ func (h CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cp := &CreatePage{Post: &yoradb.Post{}}
 
-	user, ok := r.Context().Value("User").(*yoradb.User)
+	user, ok := UserFromContext(r.Context())
 	if ok {
 		cp.UserName = user.Name
 	}
 
 	if !user.CreatePostPermit {
 		w.WriteHeader(http.StatusForbidden)
-		ErrorTemplate.Execute(w, "Недостаточно прав для создания статьи")
+		cp.ErrorMessage = "Недостаточно прав для создания статьи"
+		ErrorTemplate.Execute(w, cp)
 		return
 	}
 
@@ -78,7 +79,7 @@ func (h CreatePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		post.Annotation = template.HTML(r.FormValue("annotation"))
 		post.Text = template.HTML(r.FormValue("posttext"))
 
-		var postID int
+		var postID int64
 		postID, err = h.db.CreatePost(post, user.ID)
 		if err != nil {
 			cp.Post = post

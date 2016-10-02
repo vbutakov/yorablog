@@ -8,7 +8,7 @@ import (
 
 // User data structure
 type User struct {
-	ID               int
+	ID               int64
 	Name             string
 	Email            string
 	Password         string
@@ -20,9 +20,9 @@ type User struct {
 
 // UserRepository - interface for work with users
 type UserRepository interface {
-	CreateUser(name, email, password string) (int, error)
-	LoginUser(email, password string) (int, error)
-	GetUserByID(id int) (*User, error)
+	CreateUser(name, email, password string) (int64, error)
+	LoginUser(email, password string) (int64, error)
+	GetUserByID(id int64) (*User, error)
 	GetUserByEmail(email string) (*User, error)
 }
 
@@ -32,7 +32,7 @@ var (
 )
 
 // CreateUser add new user to Users table
-func (db *MysqlDB) CreateUser(name, email, password string) (int, error) {
+func (db *MysqlDB) CreateUser(name, email, password string) (int64, error) {
 	passwordHash := getPasswordHash(email, password)
 	res, err := db.Conn.Exec(
 		`INSERT INTO Users
@@ -46,17 +46,17 @@ func (db *MysqlDB) CreateUser(name, email, password string) (int, error) {
 
 	var id int64
 	id, err = res.LastInsertId()
-	return int(id), err
+	return id, err
 }
 
 // LoginUser check user password in db and return userID
-func (db *MysqlDB) LoginUser(email, password string) (int, error) {
+func (db *MysqlDB) LoginUser(email, password string) (int64, error) {
 	passwordHash := getPasswordHash(email, password)
 	row := db.Conn.QueryRow(
 		`SELECT id FROM Users WHERE Email = ? AND Password = ?;`,
 		email, passwordHash)
 
-	var userID int
+	var userID int64
 	err := row.Scan(&userID)
 	if err == sql.ErrNoRows {
 		return 0, ErrLoginFailed
@@ -68,7 +68,7 @@ func (db *MysqlDB) LoginUser(email, password string) (int, error) {
 }
 
 // GetUserByID reads user form db
-func (db *MysqlDB) GetUserByID(id int) (*User, error) {
+func (db *MysqlDB) GetUserByID(id int64) (*User, error) {
 	row := db.Conn.QueryRow(
 		`SELECT
 			u.Name,
@@ -119,7 +119,7 @@ func (db *MysqlDB) GetUserByEmail(email string) (*User, error) {
 		WHERE u.Email = ?;`,
 		email)
 
-	var ID int
+	var ID int64
 	var Name string
 	var Email string
 	var CreatedAt time.Time
