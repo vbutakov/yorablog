@@ -6,9 +6,17 @@ import (
 	"time"
 )
 
+// PostRepository interface for working with posts
+type PostRepository interface {
+	CreatePost(post *Post, userID int64) (int64, error)
+	GetPostByID(id int64) (*Post, error)
+	UpdatePost(post *Post) error
+	GetPosts(num, offset int) ([]Post, error)
+}
+
 // Post data structure
 type Post struct {
-	ID          int
+	ID          int64
 	Title       template.HTML
 	Description template.HTML
 	ImageURL    string
@@ -19,8 +27,8 @@ type Post struct {
 	UpdatedAt   time.Time
 }
 
-// DBInsertPost create new post in db
-func (db *mysqlDB) DBCreatePost(post *Post, userID int) (int, error) {
+// CreatePost create new post in db
+func (db *MysqlDB) CreatePost(post *Post, userID int64) (int64, error) {
 	res, err := db.Conn.Exec(
 		`INSERT INTO Posts
 			(Title, Description, ImageURL, Annotation, PostText, Author)
@@ -38,11 +46,11 @@ func (db *mysqlDB) DBCreatePost(post *Post, userID int) (int, error) {
 	var postID int64
 	postID, err = res.LastInsertId()
 
-	return int(postID), err
+	return postID, err
 }
 
-// DBGetPostByID find post byspecified id
-func (db *mysqlDB) DBGetPostByID(id int) (*Post, error) {
+// GetPostByID find post byspecified id
+func (db *MysqlDB) GetPostByID(id int64) (*Post, error) {
 	row := db.Conn.QueryRow(
 		`SELECT p.id, p.Title, p.Description, p.ImageURL, p.Annotation, p.PostText,
         u.Name AS AuthorName, p.CreatedAt, p.UpdatedAt
@@ -50,7 +58,7 @@ func (db *mysqlDB) DBGetPostByID(id int) (*Post, error) {
         WHERE p.id = ?;`,
 		id)
 
-	var ID int
+	var ID int64
 	var Title string
 	var Description string
 	var ImageURL string
@@ -74,8 +82,8 @@ func (db *mysqlDB) DBGetPostByID(id int) (*Post, error) {
 	return post, err
 }
 
-// DBUpdatePost updates post in the database
-func (db *mysqlDB) DBUpdatePost(post *Post) error {
+// UpdatePost updates post in the database
+func (db *MysqlDB) UpdatePost(post *Post) error {
 	_, err := db.Conn.Exec(
 		`UPDATE Posts
 		SET
@@ -95,8 +103,8 @@ func (db *mysqlDB) DBUpdatePost(post *Post) error {
 	return err
 }
 
-// DBGetPosts returns fixed number of posts
-func (db *mysqlDB) DBGetPosts(num, offset int) ([]Post, error) {
+// GetPosts returns fixed number of posts
+func (db *MysqlDB) GetPosts(num, offset int) ([]Post, error) {
 
 	posts := make([]Post, 0, 10)
 
@@ -114,7 +122,7 @@ func (db *mysqlDB) DBGetPosts(num, offset int) ([]Post, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var ID int
+		var ID int64
 		var Title string
 		var Description string
 		var ImageURL string

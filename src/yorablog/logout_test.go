@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"yoradb"
 )
 
 func TestLogoutGetServeHTTP(t *testing.T) {
@@ -12,11 +14,9 @@ func TestLogoutGetServeHTTP(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost/logout", nil)
 	w := httptest.NewRecorder()
 
-	c := &http.Cookie{}
-	c.Name = "SessionID"
-	c.Value = "01"
-
-	req.Header.Set("Cookie", c.String())
+	session := &yoradb.Session{ID: "01"}
+	ctx := context.WithValue(req.Context(), keySession, session)
+	req = req.WithContext(ctx)
 
 	h.ServeHTTP(w, req)
 

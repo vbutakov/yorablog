@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -24,11 +26,8 @@ func TestEditPageHavePermitServeHTTP(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "http://localhost/edit/10", body)
 	w := httptest.NewRecorder()
 
-	c := &http.Cookie{}
-	c.Name = "SessionID"
-	c.Value = "02"
-
-	req.Header.Set("Cookie", c.String())
+	ctx := context.WithValue(req.Context(), "User", sessions["02"])
+	req = req.WithContext(ctx)
 
 	h.ServeHTTP(w, req)
 
@@ -59,16 +58,17 @@ func TestEditPageNotHavePermitServeHTTP(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "http://localhost/edit/10", body)
 	w := httptest.NewRecorder()
 
-	c := &http.Cookie{}
-	c.Name = "SessionID"
-	c.Value = "01"
-
-	req.Header.Set("Cookie", c.String())
+	ctx := context.WithValue(req.Context(), "User", sessions["01"])
+	req = req.WithContext(ctx)
 
 	h.ServeHTTP(w, req)
 
 	if w.Code != http.StatusForbidden {
 		t.Errorf("Wrong error code: %v\n", w.Code)
+	}
+
+	if !bytes.Contains(w.Body.Bytes(), []byte("</html>")) {
+		t.Errorf("Page is not complete")
 	}
 
 }

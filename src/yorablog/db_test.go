@@ -9,11 +9,11 @@ import (
 type tDB struct {
 }
 
-func (db *tDB) DBCreatePost(post *yoradb.Post, userID int) (int, error) {
+func (db *tDB) CreatePost(post *yoradb.Post, userID int64) (int64, error) {
 	return 10, nil
 }
 
-func (db *tDB) DBGetPostByID(id int) (*yoradb.Post, error) {
+func (db *tDB) GetPostByID(id int64) (*yoradb.Post, error) {
 	p := &yoradb.Post{
 		ID:          id,
 		Title:       "Тестовый заголовок",
@@ -29,60 +29,69 @@ func (db *tDB) DBGetPostByID(id int) (*yoradb.Post, error) {
 	return p, nil
 }
 
-func (db *tDB) DBUpdatePost(post *yoradb.Post) error {
+func (db *tDB) UpdatePost(post *yoradb.Post) error {
 	return nil
 }
 
-func (db *tDB) DBGetPosts(num, offset int) ([]yoradb.Post, error) {
+func (db *tDB) GetPosts(num, offset int) ([]yoradb.Post, error) {
 	return nil, nil
 }
 
-func (db *tDB) DBGetUserBySessionID(sessionID string) (*yoradb.User, error) {
-
-	if user, ok := sessions[sessionID]; ok {
-		return user, nil
-	}
-
-	return nil, errors.New("User not found")
-}
-
-func (db *tDB) DBSessionValid(sessionID string) bool {
-	return true
-}
-
-func (db *tDB) DBInsertNewSession(sessionID string, expires time.Time) error {
-	return nil
-}
-
-func (db *tDB) DBCreateUser(name, email, password string) (int, error) {
+func (db *tDB) CreateUser(name, email, password string) (int64, error) {
 	return 1, nil
 }
 
-func (db *tDB) DBUpdateSessionWithUserID(sessionID string, userID int) error {
+func (db *tDB) LoginUser(email, password string) (int64, error) {
+	return 1, nil
+}
+
+func (db *tDB) GetUserByID(id int64) (*yoradb.User, error) {
+	for _, v := range sessions {
+		if v.ID == id {
+			return v, nil
+		}
+	}
+	return nil, errors.New("User not found")
+}
+
+func (db *tDB) GetUserByEmail(email string) (*yoradb.User, error) {
+	for _, v := range sessions {
+		if v.Email == email {
+			return v, nil
+		}
+	}
+	return nil, errors.New("User not found")
+}
+
+func (db *tDB) CreateSession(s *yoradb.Session) error {
 	return nil
 }
 
-func (db *tDB) DBLoginUser(email, password string) (int, error) {
-	return 10, nil
+func (db *tDB) GetSessionByID(id string) (*yoradb.Session, error) {
+	return &yoradb.Session{ID: id}, nil
 }
 
-func (db *tDB) DBLogoutUserFromSession(sessionID string) error {
+func (db *tDB) UpdateSession(s *yoradb.Session) error {
 	return nil
 }
 
-func (db *tDB) DBEmailExist(email string) bool {
-	return true
+func (db *tDB) DeleteSession(s *yoradb.Session) error {
+	return nil
 }
 
-func (db *tDB) DBCreateRestorePasswordID(email, token string) (string, error) {
-	return "", nil
+func (db *tDB) LogoutFromSession(s *yoradb.Session) error {
+	return nil
 }
 
-func (db *tDB) DBGetEmailByRestoreToken(token string) (string, error) {
+func (db *tDB) CreateRestorePasswordID(email, token string) (string, error) {
+	return token, nil
+}
+
+func (db *tDB) GetEmailByRestoreToken(token string) (string, error) {
 	return "a1@b.c", nil
 }
 
-func (db *tDB) DBUpdatePasswordByRestoreToken(token, email, password string) error {
+func (db *tDB) UpdatePasswordByRestoreToken(token, email, password string) error {
 	return nil
 }
 
