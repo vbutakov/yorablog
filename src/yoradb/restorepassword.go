@@ -36,7 +36,7 @@ func (db *MysqlDB) UpdatePasswordByRestoreToken(token, email, password string) e
 		return err
 	}
 
-	passwordHash := getPasswordHash(email, password)
+	passwordHash := GetPasswordHash(email, password)
 
 	_, err = tx.Exec(
 		`UPDATE Users u INNER JOIN RestorePasswords rp ON u.Email = rp.Email

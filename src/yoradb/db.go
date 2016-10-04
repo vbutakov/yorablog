@@ -29,7 +29,7 @@ func (db *MysqlDB) Close() error {
 	return db.Close()
 }
 
-func getPasswordHash(email, password string) string {
+func GetPasswordHash(email, password string) string {
 	data := []byte(email + ":" + password)
 	ph := fmt.Sprintf("%x", sha1.Sum(data))
 	return ph
