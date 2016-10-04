@@ -33,7 +33,7 @@ var (
 
 // CreateUser add new user to Users table
 func (db *MysqlDB) CreateUser(name, email, password string) (int64, error) {
-	passwordHash := getPasswordHash(email, password)
+	passwordHash := GetPasswordHash(email, password)
 	res, err := db.Conn.Exec(
 		`INSERT INTO Users
 			(Name, Email, Password)
@@ -51,7 +51,7 @@ func (db *MysqlDB) CreateUser(name, email, password string) (int64, error) {
 
 // LoginUser check user password in db and return userID
 func (db *MysqlDB) LoginUser(email, password string) (int64, error) {
-	passwordHash := getPasswordHash(email, password)
+	passwordHash := GetPasswordHash(email, password)
 	row := db.Conn.QueryRow(
 		`SELECT id FROM Users WHERE Email = ? AND Password = ?;`,
 		email, passwordHash)

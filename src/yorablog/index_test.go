@@ -14,7 +14,7 @@ func TestIndexServeHTTP(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost/", nil)
 	w := httptest.NewRecorder()
 
-	ctx := context.WithValue(req.Context(), "User", sessions["01"])
+	ctx := context.WithValue(req.Context(), keyUser, sessions["01"])
 	req = req.WithContext(ctx)
 
 	h.ServeHTTP(w, req)

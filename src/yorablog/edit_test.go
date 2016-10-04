@@ -10,6 +10,27 @@ import (
 	"testing"
 )
 
+func TestEditPageGet(t *testing.T) {
+	db := &tDB{}
+	h := InitEditPageHandler(db, "/home/valya/myprogs/yorablog/templates")
+
+	req := httptest.NewRequest(http.MethodGet, "http://localhost/edit/10", nil)
+	w := httptest.NewRecorder()
+
+	ctx := context.WithValue(req.Context(), keyUser, sessions["02"])
+	req = req.WithContext(ctx)
+
+	h.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Wrong error code: %v\n", w.Code)
+	}
+
+	if !bytes.Contains(w.Body.Bytes(), []byte("</html>")) {
+		t.Errorf("Page is not complete")
+	}
+}
+
 func TestEditPageHavePermitServeHTTP(t *testing.T) {
 	db := &tDB{}
 	h := InitEditPageHandler(db, "/home/valya/myprogs/yorablog/templates")

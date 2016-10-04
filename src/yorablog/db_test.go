@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"errors"
 	"time"
 	"yoradb"
@@ -42,7 +43,13 @@ func (db *tDB) CreateUser(name, email, password string) (int64, error) {
 }
 
 func (db *tDB) LoginUser(email, password string) (int64, error) {
-	return 1, nil
+	for _, v := range sessions {
+		hash := yoradb.GetPasswordHash(email, password)
+		if v.Email == email && v.Password == hash {
+			return v.ID, nil
+		}
+	}
+	return 0, yoradb.ErrLoginFailed
 }
 
 func (db *tDB) GetUserByID(id int64) (*yoradb.User, error) {
@@ -68,6 +75,12 @@ func (db *tDB) CreateSession(s *yoradb.Session) error {
 }
 
 func (db *tDB) GetSessionByID(id string) (*yoradb.Session, error) {
+	u, ok := sessions[id]
+	userID := &sql.NullInt64{Int64: u.ID}
+	if ok {
+		return &yoradb.Session{ID: id, UserID: *userID}, nil
+	}
+
 	return &yoradb.Session{ID: id}, nil
 }
 
