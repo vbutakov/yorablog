@@ -46,7 +46,7 @@ func (h SessionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			needSetCookie = true
 			sessionID = CreateSessionID()
 		} else {
-			if !session.UserID.Valid {
+			if session.UserID.Valid {
 				user, err := h.ur.GetUserByID(session.UserID.Int64)
 				if err != nil {
 					h.sr.DeleteSession(session)
